@@ -13,7 +13,7 @@ public:
     if (!is_compatible(*img)) {
       std::cerr << "ERROR: Trying to bloom into incompatible Image: ("
                 << width_ << ", " << height_ << ") (" << img->width_ << ", "
-                << img->height_ << std::endl;
+                << img->height_ << ")" << std::endl;
       return;
     }
     for (int i = 0; i < size_; ++i) {
