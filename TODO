@@ -1,0 +1,13 @@
+- add to github
+- separate scenes to files
+- make all global params configurable by each scene
+- add rotation sdf
+- make stars co-planar
+- add post-processing lens effects (e.g. bloom) with convolution
+- add bounding approximations to SDFs
+
+- make the color of difference sdf the color of the removed object at the intersection points
+
+
+- simulate moving scenes (and consider lorentz transformations)
+- simulate scattering
