@@ -1,5 +1,4 @@
 - add to github
-- separate scenes to files
 - make all global params configurable by each scene
 - add rotation sdf
 - make stars co-planar

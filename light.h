@@ -2,8 +2,8 @@
 #define LIGHT_H
 
 class Light {
-  // Light(const vec3& v, LightType type) : v(v), type(type) {}
 public:
+  virtual ~Light() {}
   virtual void diffuse(const vec3& point, const vec3& normal, vec3 *norm_to_light, float *dist_to_light, float* res) const = 0;
 };
 
