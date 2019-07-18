@@ -20,8 +20,8 @@ public:
         else if (i == pos) std::cout << ">";
         else std::cout << " ";
     }
-    std::cout << "] " << int(progress * 100.0) << "% " << total_time << " tot: "
-              << estimated_total << " left: " << estimated_remaining << "  \r";
+    std::cout << "] " << int(progress * 100.0) << "% " << timestr(total_time) << " tot: "
+              << timestr(estimated_total) << " left: " << timestr(estimated_remaining) << "  \r";
     std::cout.flush();
   }
 
@@ -30,6 +30,12 @@ public:
   }
 
 private:
+  std::string timestr(time_t time) {
+    int minutes = time / 60;
+    int seconds = time - 60 * minutes;
+    return std::to_string(minutes) + ':' + std::to_string(seconds);
+  }
+
   int max;
   time_t start;
 };
