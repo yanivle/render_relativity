@@ -11,6 +11,7 @@
 #include "image.h"
 #include "doublematrix.h"
 #include "vec3.h"
+#include "mat4.h"
 #include "sdf.h"
 #include "range.h"
 #include "ray.h"
