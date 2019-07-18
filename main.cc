@@ -17,48 +17,22 @@
 #include "progress.h"
 #include "light.h"
 #include "rand_utils.h"
+#include "rendering_params.h"
 #include "scenes/scene1.h"
 #include "scenes/stars1.h"
 #include "scenes/cube_scene.h"
 
-const int WIDTH = 1000;
-const int HEIGHT = 1000;
-
-const int MAX_MARCHING_STEPS = 500;
-// const int MAX_MARCHING_STEPS = 500000;
-const float MAX_DIST = 10000;
-const float EPSILON = 0.001;
-
-// const bool DO_SHADING = false;
-const bool DO_SHADING = true;
-
-const int AA_FACTOR = 1;
-// const int AA_FACTOR = 4;
-
-// const int REFLECTION_DEPTH = 1;
-const int REFLECTION_DEPTH = 5;
-
-const int ROUGHNESS_ITERATIONS = 1;
-// const int ROUGHNESS_ITERATIONS = 5;
-
-const bool USE_GRAVITY = false;
-// const bool USE_GRAVITY = true;
-
-const bool LIGHT_DECAY = false;
-// const bool LIGHT_DECAY = true;
-
 vec3 eye_pos(0, 0, -5);
-const float SCREEN_Z = 0;
 
 bool march(Ray& ray, const Scene& scene, SDFResult* res) {
-  for (int i = 0; i < MAX_MARCHING_STEPS; ++i) {
+  for (int i = 0; i < scene.rendering_params().max_marching_steps; ++i) {
     *res = scene.root()->sdf(ray.origin);
-    if (res->dist < EPSILON) {
+    if (res->dist < scene.rendering_params().epsilon) {
       return true;
-    } else if (abs(res->dist) > MAX_DIST) {
+    } else if (abs(res->dist) > scene.rendering_params().max_dist) {
       return false;
     }
-    if (!USE_GRAVITY) {
+    if (!scene.rendering_params().use_gravity) {
       ray.march(res->dist);
     } else {
       ray.marchWithGravity(res->dist, scene.masses());
@@ -70,9 +44,9 @@ bool march(Ray& ray, const Scene& scene, SDFResult* res) {
 float shadow(Ray ray_to_light, const Scene& scene, float dist_to_light) {
   float res = 1.0;
   const float k = 16;
-  for (float t = EPSILON * 100; t < dist_to_light;) {
+  for (float t = scene.rendering_params().epsilon * 100; t < dist_to_light;) {
     SDFResult r = scene.root()->sdf(ray_to_light.origin + ray_to_light.direction * t);
-    if (r.dist < EPSILON) return 0.0;
+    if (r.dist < scene.rendering_params().epsilon) return 0.0;
     res = fmin(res, k * r.dist / t);
     t += r.dist;
   }
@@ -89,11 +63,11 @@ FRGB diffuse(const vec3& v, const SDFResult& r, const Scene& scene, float diffus
     float cos_alpha;
     scene.lights()[i]->diffuse(v, normal, &norm_to_light, &dist_to_light, &cos_alpha);
     float shade = 1.0;
-    if (DO_SHADING) {
+    if (scene.rendering_params().do_shading) {
       shade = shadow(Ray(v, norm_to_light), scene, dist_to_light);
     }
     float factor = cos_alpha * shade;
-    if (LIGHT_DECAY) {
+    if (scene.rendering_params().light_decay) {
       factor = factor * 50 / (dist_to_light * dist_to_light);
     }
     if (factor < 0) factor = 0;
@@ -102,7 +76,7 @@ FRGB diffuse(const vec3& v, const SDFResult& r, const Scene& scene, float diffus
   return r.material.rgb(v) * total_factor;
 }
 
-FRGB shoot(Ray ray, const Scene& scene, int remaining_depth=REFLECTION_DEPTH);
+FRGB shoot(Ray ray, const Scene& scene, int remaining_depth);
 
 FRGB reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_depth) {
   if (remaining_depth == 0) return colors::BLACK;
@@ -110,7 +84,7 @@ FRGB reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_
   ray.direction.ireflect(normal);
   int num_iters = 1;
   if (mat.roughness > 0) {
-    num_iters = ROUGHNESS_ITERATIONS;
+    num_iters = scene.rendering_params().roughness_iterations;
   }
   std::vector<FRGB> rgbs;
   vec3 original_dir = ray.direction;
@@ -120,7 +94,7 @@ FRGB reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_
       ray.direction = original_dir + noise_vec;
       ray.direction.inormalize();
     }
-    ray.march(EPSILON * 5);
+    ray.march(scene.rendering_params().epsilon * 5);
     rgbs.push_back(shoot(ray, scene, remaining_depth));
   }
   return FRGB::average(rgbs);
@@ -159,26 +133,26 @@ int main(void)
   std::cout << "Total lights: " << scene.lights().size() << std::endl;
   std::cout << "Total masses: " << scene.masses().size() << std::endl;
 
-  Image img(WIDTH, HEIGHT);
+  Image img(scene.rendering_params().width, scene.rendering_params().height);
 
   time_t last_update = time(0);
   time_t seconds_until_update = 60 * 5;
-  Progress progress(WIDTH);
-  for (int x = 0; x < WIDTH; ++x) {
+  Progress progress(scene.rendering_params().width);
+  for (int x = 0; x < scene.rendering_params().width; ++x) {
     if (time(0) - last_update > seconds_until_update) {
       last_update = time(0);
       img.save("intermediate.ppm");
       system("open intermediate.ppm");
     }
-    for (int y = 0; y < HEIGHT; ++y) {
+    for (int y = 0; y < scene.rendering_params().height; ++y) {
       std::vector<FRGB> rgbs;
-      for (int dx = 0; dx < AA_FACTOR; ++dx) {
-        for (int dy = 0; dy < AA_FACTOR; ++dy) {
-          float x_screen = interpolate(x * AA_FACTOR + dx, Range(0, WIDTH * AA_FACTOR), Range(-1, 1));
-          float y_screen = interpolate(y * AA_FACTOR + dy, Range(0, HEIGHT * AA_FACTOR), Range(1, -1));
-          Ray ray(eye_pos, vec3(x_screen, y_screen, SCREEN_Z - eye_pos.z));
+      for (int dx = 0; dx < scene.rendering_params().aa_factor; ++dx) {
+        for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
+          float x_screen = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
+          float y_screen = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
+          Ray ray(eye_pos, vec3(x_screen, y_screen, scene.rendering_params().screen_z - eye_pos.z));
 
-          rgbs.push_back(shoot(ray, scene));
+          rgbs.push_back(shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
       }
       img(x, y) = FRGB::average(rgbs);

@@ -6,11 +6,20 @@
 #include "sdf.h"
 #include "light.h"
 #include "point_mass.h"
+#include "rendering_params.h"
 
 class Scene {
 public:
   Scene() {
     std::cerr << "Creating new scene" << std::endl;
+  }
+
+  const RenderingParams& rendering_params() const {
+    return rendering_params_;
+  }
+
+  RenderingParams* modifiable_rendering_params() {
+    return &rendering_params_;
   }
 
   ~Scene() {
@@ -63,6 +72,7 @@ public:
   }
 
 private:
+  RenderingParams rendering_params_;
   SDF* root_sdf;
   std::vector<SDF*> objects_;
   std::vector<Light*> lights_;
