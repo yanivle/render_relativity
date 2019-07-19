@@ -28,9 +28,9 @@ int main(void)
 {
   Renderer renderer;
   Scene scene;
-  // createScene1(&scene);
+  createScene1(&scene);
   // createStars1Scene(&scene);
-  createCubeScene(&scene);
+  // createCubeScene(&scene);
 
   // scene.modifiable_rendering_params()->camera_settings.eye_pos = vec3(0, 0, -5);
   // scene.modifiable_rendering_params()->camera_settings.target = vec3(0, -80, -5);

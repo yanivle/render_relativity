@@ -118,16 +118,23 @@ public:
 
   SDFResult sdf(const vec3& v) const {
     SDFResult r1 = obj1->sdf(v);
+    // TODO: can I make bound tighter?
+    const float bound = 0;
+    if (r1.dist < bound) {
+      return r1;
+    }
     SDFResult r2 = obj2->sdf(v);
     if (r1.dist < r2.dist) {
       return r1;
     }
+    // Swap them, as maybe nearby rays will trigger r2 first.
+    SDF* t = obj1; obj1 = obj2; obj2 = t;
     return r2;
   }
 
 private:
-  SDF *obj1;
-  SDF *obj2;
+  mutable SDF *obj1;
+  mutable SDF *obj2;
 };
 
 class Intersection : public SDF {
@@ -136,31 +143,23 @@ public:
 
   SDFResult sdf(const vec3& v) const {
     SDFResult r1 = obj1->sdf(v);
+    // TODO: can I make bound tighter?
+    const float bound = 1;
+    if (r1.dist > bound) {
+      return r1;
+    }
     SDFResult r2 = obj2->sdf(v);
     if (r1.dist > r2.dist) {
       return r1;
     }
+    // Swap them, as maybe nearby rays will trigger r2 first.
+    SDF* t = obj1; obj1 = obj2; obj2 = t;
     return r2;
   }
 
 private:
-  SDF *obj1;
-  SDF *obj2;
-};
-
-class Difference : public SDF {
-public:
-  Difference(SDF *obj1, SDF* obj2): obj1(obj1), obj2(obj2) {}
-
-  SDFResult sdf(const vec3& v) const {
-    SDFResult r1 = obj1->sdf(v);
-    SDFResult r2 = obj2->sdf(v);
-    return SDFResult(std::max(r1.dist, -r2.dist), r1.material);
-  }
-
-private:
-  SDF *obj1;
-  SDF *obj2;
+  mutable SDF *obj1;
+  mutable SDF *obj2;
 };
 
 class Smooth : public SDF {
@@ -194,20 +193,6 @@ public:
 
   SDFResult sdf(const vec3& v) const {
     SDFResult res = child->sdf(v.mod(period) - period * 0.5);
-    // switch (int(v.x + v.z) % 4) {
-    //   case 0:
-    //     res.material.color = colors::RED;
-    //     break;
-    //   case 1:
-    //     res.material.color = colors::BLUE;
-    //     break;
-    //   case 2:
-    //     res.material.color = colors::GREEN;
-    //     break;
-    //   case 3:
-    //     res.material.color = colors::YELLOW;
-    //     break;
-    // }
     return res;
   }
 

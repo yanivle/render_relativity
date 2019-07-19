@@ -1,7 +1,9 @@
-- add bounding approximations to SDFs
 - make stars co-planar
 - add post-processing lens effects (e.g. bloom) with convolution
 - add rotation sdf
+- profile and optimize
+- give scenes names
+- if my short-circuit optimization even helping? (evaluating less SDFs but marching lower distances)
 
 - make the color of difference sdf the color of the removed object at the intersection points
 

@@ -34,8 +34,9 @@ void addCube(Scene* scene) {
   SDF* cube = createCube(scene);
 
   // chop off numbers
-  SDF* sphere1 = scene->own(new Sphere(vec3(0, 0, 0), 1.5, Material()));
-  cube = scene->own(new Difference(cube, sphere1));
+  SDF* sphere1 = scene->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::WHITE, 0, 0.5, 0.05)));
+  sphere1 = scene->own(new Negate(sphere1));
+  cube = scene->own(new Intersection(cube, sphere1));
 
   // Rounded corners.
   // cube = scene->own(new Expand(cube, 0.1));
