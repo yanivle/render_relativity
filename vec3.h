@@ -75,7 +75,7 @@ struct Vec3 {
     (*this) /= len();
   }
 
-  Vec3 normalize() {
+  Vec3 normalize() const {
     Vec3 res = *this;
     res.inormalize();
     return res;

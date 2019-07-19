@@ -1,7 +1,7 @@
-- add rotation sdf
+- add bounding approximations to SDFs
 - make stars co-planar
 - add post-processing lens effects (e.g. bloom) with convolution
-- add bounding approximations to SDFs
+- add rotation sdf
 
 - make the color of difference sdf the color of the removed object at the intersection points
 

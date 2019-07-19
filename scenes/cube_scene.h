@@ -81,6 +81,7 @@ void addCheckeredWall(Scene* scene) {
 }
 
 void createCubeScene(Scene *scene) {
+  scene->modifiable_rendering_params().reflection_depth = 1;
   addCube(scene);
   addChoppedSphere(scene);
   addCheckeredFloor(scene);

@@ -18,8 +18,8 @@ public:
     return rendering_params_;
   }
 
-  RenderingParams* modifiable_rendering_params() {
-    return &rendering_params_;
+  RenderingParams& modifiable_rendering_params() {
+    return rendering_params_;
   }
 
   ~Scene() {
@@ -33,6 +33,9 @@ public:
   }
 
   const SDF* root() const {
+    if (root_sdf == 0) {
+      std::cerr << "ERROR: Accessing uninitialized scene." << std::endl;
+    }
     return root_sdf;
   }
 

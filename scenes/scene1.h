@@ -1,8 +1,8 @@
 #include "../scene.h"
 
 void createScene1(Scene* res) {
-  SDF* s1 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::RED, 0.5, 1.0, 0.5, 0)));
-  SDF* s2 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::YELLOW, 0.5, 1.0, 0.5, 0)));
+  SDF* s1 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::RED, 0.1, 1.0, 0.5, 0)));
+  SDF* s2 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::YELLOW, 0.1, 1.0, 0.5, 0)));
   SDF* s3 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::GREEN, 0.1, 1.0, 0.5, 0)));
   SDF* s4 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::BLUE, 0.1, 1.0, 0.5, 0)));
 

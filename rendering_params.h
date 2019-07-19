@@ -1,6 +1,8 @@
 #ifndef RENDERING_PARAMS
 #define RENDERING_PARAMS
 
+#include "vec3.h"
+
 struct RenderingParams {
   int width = 1000;
   int height = 1000;
@@ -14,6 +16,11 @@ struct RenderingParams {
   bool use_gravity = false;
   bool light_decay = false;
   float screen_z = 0;
+  struct CameraSettings {
+    vec3 eye_pos = vec3(0, 0, -5);
+    vec3 target = vec3(0, 0, 1);
+    vec3 up = vec3(0, 1, 0);
+  } camera_settings;
 };
 
 #endif
