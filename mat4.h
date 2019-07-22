@@ -13,7 +13,7 @@ public:
     }
   }
 
-  static Mat4 lookat(const vec3& from, const vec3& to, const vec3& up) {
+  static Mat4 view_to_world(const vec3& from, const vec3& to, const vec3& up) {
     vec3 forward = (to - from).normalize();
     vec3 side = up.cross(forward).normalize();
     vec3 up_ = forward.cross(side);

@@ -15,9 +15,9 @@ struct RenderingParams {
   int roughness_iterations = 1; // 5
   bool use_gravity = false;
   bool light_decay = false;
-  float screen_z = 0;
+  float screen_z = 5;
   struct CameraSettings {
-    vec3 eye_pos = vec3(0, 0, -5);
+    vec3 eye_pos = vec3(0, 0, 0);
     vec3 target = vec3(0, 0, 1);
     vec3 up = vec3(0, 1, 0);
   } camera_settings;

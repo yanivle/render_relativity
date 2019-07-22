@@ -28,16 +28,18 @@ int main(void)
 {
   Renderer renderer;
   Scene scene;
-  createScene1(&scene);
-  // createStars1Scene(&scene);
+  // createScene1(&scene);
+  createStars1Scene(&scene);
   // createCubeScene(&scene);
 
-  // scene.modifiable_rendering_params()->camera_settings.eye_pos = vec3(0, 0, -5);
-  // scene.modifiable_rendering_params()->camera_settings.target = vec3(0, -80, -5);
-  // scene.modifiable_rendering_params()->camera_settings.up = vec3(0, 0, 1);
-  renderer.modifiable_view_world_matrix() = Mat4::lookat(scene.rendering_params().camera_settings.eye_pos,
+  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
                                             scene.rendering_params().camera_settings.target,
                                             scene.rendering_params().camera_settings.up);
+
+  vec3 v(0, 0, 0);
+  std::cout << "Before: " << v.str() << " after: " << (renderer.view_world_matrix() * v).str() << std::endl;
+  v = vec3(0, 0, 1);
+  std::cout << "Before: " << v.str() << " after: " << (renderer.view_world_matrix() * v).str() << std::endl;
   std::cout << "World transform matrix:" << std::endl;
   std::cout << renderer.view_world_matrix().str() << std::endl;
 
@@ -62,8 +64,9 @@ int main(void)
         for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
           float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
           float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
-          float z_dir = scene.rendering_params().screen_z - scene.rendering_params().camera_settings.eye_pos.z;
-          Ray ray(vec3(), vec3(x_dir, y_dir, z_dir));
+          // float z_dir = scene.rendering_params().screen_z - scene.rendering_params().camera_settings.eye_pos.z;
+          float z_dir = scene.rendering_params().screen_z;
+          Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
 
           rgbs.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }

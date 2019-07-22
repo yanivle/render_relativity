@@ -20,20 +20,19 @@ void AddBigStar(const FRGB& color1, const FRGB& color2, float perlin_scale,
   Material material(colorizer, ambient, diffuse, 0, 0);
   SDF* star = scene->own(new Sphere(vec3(0, 0, 0), radius, material));
   colorizer->setSurface((Sphere*)star);
-  if (deformation_magnitude > 0) {
-    star = scene->own(new PerlinDeformation((Sphere*)star, deformation_scale, deformation_magnitude));
-  }
+  // if (deformation_magnitude > 0) {
+  //   star = scene->own(new PerlinDeformation((Sphere*)star, deformation_scale, deformation_magnitude));
+  // }
   star = scene->addObject(new Translate(star, center));
   scene->addMass((PointMass(center, mass)));
 }
 
 void createStars1Scene(Scene *res) {
-  // eye_pos = vec3(0, 0, -3);
-
   // Sun.
   float sun_radius = 2;
   vec3 sun_center = vec3(-2.5, -2.5, 15);
-  if (false)
+  // vec3 sun_center = vec3(0, 0, 0);
+  // if (false)
   AddBigStar(FRGB(0xF6, 0xF7, 0xD2), FRGB(0xF9, 0xF4, 0x8F), 1,
               0.0, 0.1,
               1, 0.1,
@@ -43,7 +42,7 @@ void createStars1Scene(Scene *res) {
   // Red star.
   float red_radius = 1.5;
   vec3 red_center = vec3(1.5, 1.5, 20);
-  if (false)
+  // if (false)
   AddBigStar(FRGB(161, 0, 0), FRGB(100, 50, 0), 15,
               // 0, 0.075,
               0, 0.2,
@@ -59,7 +58,7 @@ void createStars1Scene(Scene *res) {
               0.2, vec3(3, -1.5, 25), 0, res);
 
   // Moon.
-  if (false)
+  // if (false)
   AddBigStar(FRGB(107,147,214), FRGB(216,197,150), 15,
               // 0.1, 0.001,
               1, 1.0,
@@ -67,7 +66,7 @@ void createStars1Scene(Scene *res) {
               0.05, vec3(3 - 0.6, -1.5, 25), 0, res);
 
   // Left.
-  if (false)
+  // if (false)
   AddBigStar(FRGB(107,147,214), FRGB(216,197,150), 5,
               // 0, 0.0001,
               0, 0.07,
@@ -76,7 +75,7 @@ void createStars1Scene(Scene *res) {
 
 
   // Black hole.
-  if (false)
+  // if (false)
   AddBigStar(colors::BLACK, colors::BLACK, 0,
               0, 0,
               0, 0,
@@ -101,6 +100,9 @@ void createStars1Scene(Scene *res) {
   for (int i = 0; i < 50; ++i) {
     res->addLight(new PointLight(red_center + vec3::random().normalize() * (red_radius + 1)));
   }
+
+  res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 30, -30);
+  res->modifiable_rendering_params().camera_settings.target = sun_center;
 }
 
 #endif
