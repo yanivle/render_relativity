@@ -3,7 +3,7 @@
 
 #include "vec3.h"
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 class Mat4 {
 public:
@@ -115,7 +115,7 @@ public:
   }
 
   std::string str() const {
-    std::strstream res;
+    std::stringstream res;
     for (int y = 0; y < 4; ++y) {
       if (y == 0) {
         res << "Mat4(";

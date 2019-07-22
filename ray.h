@@ -3,7 +3,7 @@
 
 #include "vec3.h"
 #include <string>
-#include <strstream>
+#include <sstream>
 #include "point_mass.h"
 
 struct Ray {
@@ -34,7 +34,7 @@ struct Ray {
     }
 
     std::string str() const {
-      std::strstream res;
+      std::stringstream res;
       res << "Ray(origin=" << origin.str() << ", direction=" << direction.str() << ')';
       return res.str();
     }
