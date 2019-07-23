@@ -1,13 +1,15 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <cstring>
+
 template <class T>
 class Matrix {
 public:
   Matrix(int width, int height) :
   width_(width), height_(height), size_(width * height) {
     data_ = new T[size_];
-    memset(data_, 0, size_);
+    std::memset(data_, 0, size_);
   }
 
   ~Matrix() {
