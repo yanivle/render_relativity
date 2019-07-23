@@ -27,8 +27,8 @@ int main(void)
 {
   Renderer renderer;
   Scene scene;
-  createScene1(&scene);
-  // createStars1Scene(&scene);
+  // createScene1(&scene);
+  createStars1Scene(&scene);
   // createCubeScene(&scene);
 
   renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
@@ -63,7 +63,6 @@ int main(void)
         for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
           float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
           float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
-          // float z_dir = scene.rendering_params().screen_z - scene.rendering_params().camera_settings.eye_pos.z;
           float z_dir = scene.rendering_params().screen_z;
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
 
@@ -75,6 +74,16 @@ int main(void)
     progress.update(x);
   }
   progress.done();
+
+  // img(100, 100) = Color(255, 255, 255);
+  // img(200, 200) = Color(1000, 1000, 1000);
+  // img(300, 300) = Color(10000, 10000, 10000);
+  // img(400, 400) = Color(100000, 255, 255);
+  //
+  // img(100, 100) = Color(0, 255, 0);
+  // img(200, 200) = Color(0, 2550, 0);
+  // img(300, 300) = Color(0, 25500, 0);
+  // img(400, 400) = Color(0, 255000, 0);
 
   img.save("output.ppm");
 
