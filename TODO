@@ -1,5 +1,5 @@
-- make stars co-planar
-- add post-processing lens effects (e.g. bloom) with convolution
+- use palette for perlin colorizer
+- add progress bar for post processing
 - add rotation sdf
 - profile and optimize
 - give scenes names
