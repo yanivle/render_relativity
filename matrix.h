@@ -7,6 +7,7 @@ public:
   Matrix(int width, int height) :
   width_(width), height_(height), size_(width * height) {
     data_ = new T[size_];
+    memset(data_, 0, size_);
   }
 
   ~Matrix() {
