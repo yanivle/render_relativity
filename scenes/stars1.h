@@ -3,12 +3,17 @@
 
 #include "../scene.h"
 
-void AddStar(Scene* scene) {
-  Material material(colors::WHITE, rand_range(0, 1), 0, 0, 0);
+void AddStar(SDF** container, Scene* scene) {
+  Material material(colors::WHITE, rand_range(0.5, 1), 0, 0, 0);
   vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
-  float radius = rand_range(0.1, 0.4);
-  SDF* star = scene->own(new Sphere(vec3(0, 0, 0), radius, material));
-  star = scene->addObject(new Translate(star, center));
+  center = center.normalize() * 1200;
+  float radius = rand_range(0.3, 0.8);
+  SDF* star = scene->own(new Sphere(center, radius, material));
+  if (*container == 0) {
+    *container = star;
+  } else {
+    *container = scene->own(new Union(*container, star));
+  }
 }
 
 void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
@@ -58,13 +63,21 @@ void createStars1Scene(Scene *res) {
   AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 20, 0, 0), 0, res);
 
   // Black hole.
-  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 20, res);
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 1, res);
+
+  SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
+  bound_obj = res->own(new Negate(bound_obj));
+  SDF* stars_container = 0;
 
   const int NUM_BACKGROUND_STARS = 5000;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStar(res);
+    AddStar(&stars_container, res);
   }
-  //
+
+  if (stars_container != 0) {
+    res->addObject(new Bound(stars_container, bound_obj, 10));
+  }
+  
   // vec3 plane_normal = vec3(0, 0, -1).normalize();
   // vec3 cb1 = plane_normal.randomOrthonormalVec();
   // vec3 cb2 = plane_normal.cross(cb1);
@@ -76,7 +89,6 @@ void createStars1Scene(Scene *res) {
   // wall = new Translate(wall, vec3(0, 0, 2000));
   // Add(wall);
 
-  // for (int i = 0; i < 50; ++i) {
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(vec3(-25, 0, 0) + vec3::random().normalize() * 47));
   }
