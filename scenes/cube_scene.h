@@ -57,6 +57,7 @@ void addChoppedSphere(Scene* scene) {
 
   // Move to a better position.
   sphere = scene->addObject(new Translate(sphere, vec3(1.5, -1.2, 8)));
+  scene->addMass(PointMass(vec3(1.5, -1.2, 8), 0.01));
 }
 
 void addCheckeredFloor(Scene* scene) {
@@ -95,6 +96,10 @@ void createCubeScene(Scene *scene) {
 
   // scene->addLight(new PointLight(vec3(0, 0, -10)));
   scene->addLight(new PointLight(vec3(10, 20, -10)));
+
+  scene->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -5);
+  scene->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
+  scene->modifiable_rendering_params().use_gravity = true;
 }
 
 #endif

@@ -8,7 +8,11 @@ Image with relativistic effects:
 
 ![Chopped cube](/chopped_cube.png)
 
-![Blackhole 1](/blackhole1.png)
+![Chopped cube](/chopped_cube_with_gravity.png)
+
+![Blackhole 2 without gravity](/blackhole2_no_gravity.png)
 
 ![Blackhole 2](/blackhole2.png)
+
+![Blackhole 1](/blackhole1.png)
 
