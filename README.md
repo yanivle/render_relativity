@@ -8,7 +8,7 @@ Image with relativistic effects:
 
 ![Chopped cube](/chopped_cube.png)
 
-![Blackhole 1](/blackhole1.pbm)
+![Blackhole 1](/blackhole1.png)
 
-![Blackhole 2](/blackhole2.ppm)
+![Blackhole 2](/blackhole2.png)
 
