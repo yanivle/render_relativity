@@ -13,12 +13,6 @@ struct Filter {
 
   float data[height][width] = {0};
 
-  static Filter id() {
-    Filter res;
-    res.data[radius_y][radius_x] = 1;
-    return res;
-  }
-
   void inormalize() {
     float sum = 0;
     for (int y = 0; y < height; ++y) {
@@ -31,6 +25,20 @@ struct Filter {
         data[y][x] /= sum;
       }
     }
+  }
+
+  void iaverage(const Filter& other) {
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x) {
+        data[y][x] = (data[y][x] + other.data[y][x]) / 2;
+      }
+    }
+  }
+
+  static Filter id() {
+    Filter res;
+    res.data[radius_y][radius_x] = 1;
+    return res;
   }
 
   static Filter dist() {
@@ -143,6 +151,7 @@ public:
     Image bloomed(width_, height_);
     Filter filter = Filter::dist2();
     filter.inormalize();
+    filter.iaverage(Filter::id());
     convolve(filter, &bloomed);
     for (int i = 0; i < size_; ++i) {
       Color color = bloomed(i);
