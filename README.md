@@ -1,12 +1,12 @@
 # render_relativity
 
 Image without relativistic effects:
-![Capsules](/1.pbm)
+![Capsules](/capsules.png)
 
 Image with relativistic effects:
-![Capsules with relativity](/bent_force_1_over_50.pbm)
+![Capsules with relativity](/capsules_gravity.png)
 
-![Chopped cube](/chopped_cube.pbm)
+![Chopped cube](/chopped_cube.png)
 
 ![Blackhole 1](/blackhole1.pbm)
 
