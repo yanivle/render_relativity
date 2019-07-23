@@ -34,36 +34,36 @@ void createStars1Scene(Scene *res) {
   AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 0.0, 1.0, 2, 20, 20+25, vec3(-25, 0, 0), 0, res);
 
   // Mercuri.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.1, 0.1, 0.1, 0.2, vec3(20 + 2, 0, 0), 0, res);
+  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.2, vec3(20 + 2, 0, 0), 0, res);
 
   // Venus.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.1, 0.1, 0.1, 0.4, vec3(20 + 4, 0, 0), 0, res);
+  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 4, 0, 0), 0, res);
 
   // Earth.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.1, 0.1, 0.1, 0.4, vec3(20 + 6, 0, 0), 0, res);
+  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 6, 0, 0), 0, res);
 
   // Mars.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.1, 0.1, 0.1, 0.1, vec3(20 + 8, 0, 0), 0, res);
+  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.1, vec3(20 + 8, 0, 0), 0, res);
 
   // Jupiter.
-  AddBigStar(Color(0xF6, 0xF7, 0xD2), Color(0xF9, 0xF4, 0x8F), 15, 0.0, 0.1, 0.1, 0.1, 1, vec3(20 + 10, 0, 0), 0, res);
+  AddBigStar(Color(0xF6, 0xF7, 0xD2), Color(0xF9, 0xF4, 0x8F), 15, 0.0, 0.01, 0.1, 0.1, 1, vec3(20 + 10, 0, 0), 0, res);
 
   // Saturn.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.1, 0.1, 0.1, 0.8, vec3(20 + 14, 0, 0), 0, res);
+  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(20 + 14, 0, 0), 0, res);
 
   // Uranus.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.1, 0.1, 0.1, 0.5, vec3(20 + 18, 0, 0), 0, res);
+  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 18, 0, 0), 0, res);
 
   // Neptune.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.1, 0.1, 0.1, 0.5, vec3(20 + 20, 0, 0), 0, res);
+  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 20, 0, 0), 0, res);
 
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 20, res);
 
-  // const int NUM_BACKGROUND_STARS = 1000;
-  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-  //   AddStar();
-  // }
+  const int NUM_BACKGROUND_STARS = 5000;
+  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+    AddStar(res);
+  }
   //
   // vec3 plane_normal = vec3(0, 0, -1).normalize();
   // vec3 cb1 = plane_normal.randomOrthonormalVec();
