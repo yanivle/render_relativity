@@ -3,7 +3,7 @@
 
 #include "../scene.h"
 
-SDF* createCube(Scene* scene, const FRGB& color = colors::RED) {
+SDF* createCube(Scene* scene, const Color& color = colors::RED) {
   Material material(color, 0, 0.5, 0.05);
   std::vector<vec3> normals = {
     vec3(-1, 0, 0),
@@ -63,7 +63,7 @@ void addCheckeredFloor(Scene* scene) {
   vec3 normal = vec3(0, 1, 0);
   vec3 cb1 = normal.randomOrthonormalVec();
   vec3 cb2 = normal.cross(cb1);
-  CheckerboardColorizer *colorizer = new CheckerboardColorizer(FRGB(255, 165, 0), colors::BLACK, 0.3);
+  CheckerboardColorizer *colorizer = new CheckerboardColorizer(Color(255, 165, 0), colors::BLACK, 0.3);
   Material material(colorizer, 0.1, 1.0, 0.5);
   SDF* floor = scene->own(new Plane(normal, cb1, cb2, material));
   colorizer->setSurface((Plane*)floor);
