@@ -16,6 +16,7 @@ struct RenderingParams {
   bool use_gravity = false;
   bool light_decay = false;
   float screen_z = 5;
+  float gravity_slowdown_factor = 10;
   struct CameraSettings {
     vec3 eye_pos = vec3(0, 0, 0);
     vec3 target = vec3(0, 0, 1);

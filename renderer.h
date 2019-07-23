@@ -50,7 +50,7 @@ private:
       if (!scene.rendering_params().use_gravity) {
         ray.march(res->dist);
       } else {
-        ray.marchWithGravity(res->dist, scene.masses());
+        ray.marchWithGravity(res->dist, scene.masses(), scene.rendering_params().gravity_slowdown_factor);
       }
     }
     return false;
