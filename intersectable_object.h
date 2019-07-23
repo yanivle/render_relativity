@@ -5,7 +5,7 @@
 
 struct IntersectableObject {
   struct IntersectionResult {
-    FRGB color;
+    Color color;
     Vec3 position;
   };
 

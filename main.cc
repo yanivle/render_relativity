@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include "palette.h"
-#include "rgb.h"
 #include "matrix.h"
 #include "image.h"
 #include "doublematrix.h"
@@ -28,8 +27,8 @@ int main(void)
 {
   Renderer renderer;
   Scene scene;
-  // createScene1(&scene);
-  createStars1Scene(&scene);
+  createScene1(&scene);
+  // createStars1Scene(&scene);
   // createCubeScene(&scene);
 
   renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
@@ -59,7 +58,7 @@ int main(void)
       system("open intermediate.ppm");
     }
     for (int y = 0; y < scene.rendering_params().height; ++y) {
-      std::vector<FRGB> rgbs;
+      std::vector<Color> colors;
       for (int dx = 0; dx < scene.rendering_params().aa_factor; ++dx) {
         for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
           float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
@@ -68,10 +67,10 @@ int main(void)
           float z_dir = scene.rendering_params().screen_z;
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
 
-          rgbs.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
+          colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
       }
-      img(x, y) = FRGB::average(rgbs);
+      img(x, y) = Color::average(colors);
     }
     progress.update(x);
   }

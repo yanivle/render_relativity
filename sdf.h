@@ -4,7 +4,7 @@
 #include "vec3.h"
 #include <algorithm>
 #include <vector>
-#include "rgb.h"
+#include "color.h"
 #include "material.h"
 #include "colorizer.h"
 #include "perlin_noise.h"
@@ -174,7 +174,7 @@ public:
     float dist = -log2(e1 + e2) / k; // (r1.dist * e1 + r2.dist * e2) / (e1 + e2);
     float alpha = e2 / (e1 + e2);
     Material mat = r1.material;
-    mat.color = interpolate_rgbs(alpha, r1.material.color, r2.material.color);
+    mat.color_ = interpolate_colors(alpha, r1.material.color_, r2.material.color_);
     mat.ambient = interpolate_floats(1 - alpha, r1.material.ambient, r2.material.ambient);
     mat.diffuse = interpolate_floats(1 - alpha, r1.material.diffuse, r2.material.diffuse);
     mat.reflect = interpolate_floats(1 - alpha, r1.material.reflect, r2.material.reflect);

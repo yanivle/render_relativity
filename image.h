@@ -2,12 +2,12 @@
 #define IMAGE_H
 
 #include "matrix.h"
-#include "rgb.h"
+#include "color.h"
 
-class Image : public Matrix<FRGB> {
+class Image : public Matrix<Color> {
 public:
   Image(int width, int height) :
-  Matrix<FRGB>(width, height) {}
+  Matrix<Color>(width, height) {}
 
   void bloom(Matrix<RGB>* img) {
     if (!is_compatible(*img)) {
@@ -17,8 +17,8 @@ public:
       return;
     }
     for (int i = 0; i < size_; ++i) {
-      FRGB frgb = (*this)(i);
-      RGB rgb = frgb.toRGB();
+      Color color = (*this)(i);
+      RGB rgb = color.toRGB();
       (*img)(i) = rgb;
     }
   }
@@ -37,19 +37,19 @@ public:
     (void) fclose(fp);
   }
 
-  void drawVerticalLine(int x, const FRGB& color) {
+  void drawVerticalLine(int x, const Color& color) {
     for (int y = 0; y < height_; ++y) {
       (*this)(x, y) = color;
     }
   }
 
-  void drawHorizontalLine(int y, const FRGB& color) {
+  void drawHorizontalLine(int y, const Color& color) {
     for (int x = 0; x < width_; ++x) {
       (*this)(x, y) = color;
     }
   }
 
-  void drawSquare(int x0, int y0, int x1, int y1, const FRGB& color) {
+  void drawSquare(int x0, int y0, int x1, int y1, const Color& color) {
     for (int y = y0; y < y1; ++y) {
       for (int x = x0; x < x1; ++x) {
         (*this)(x, y) = color;
@@ -57,7 +57,7 @@ public:
     }
   }
 
-  void drawSquareCrissCross(int x0, int y0, int x1, int y1, int square_size, const FRGB& color1, const FRGB& color2) {
+  void drawSquareCrissCross(int x0, int y0, int x1, int y1, int square_size, const Color& color1, const Color& color2) {
     for (int y = y0; y < y1; ++y) {
       for (int x = x0; x < x1; ++x) {
         if ((x + y) / square_size % 2 == 0) {

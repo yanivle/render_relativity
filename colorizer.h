@@ -3,10 +3,11 @@
 
 #include "range.h"
 #include "perlin_noise.h"
+#include "color.h"
 
 class Colorizer {
 public:
-  virtual FRGB rgb(const vec3& v) const = 0;
+  virtual Color color(const vec3& v) const = 0;
   virtual ~Colorizer() {}
 };
 
@@ -27,14 +28,14 @@ inline bool checkerboard(float a, float b, float scale) {
 
 class CheckerboardColorizer : public Colorizer {
 public:
-  CheckerboardColorizer(const FRGB& color1, const FRGB& color2, float scale)
+  CheckerboardColorizer(const Color& color1, const Color& color2, float scale)
     : color1(color1), color2(color2), scale(scale), surface(0) {}
 
   void setSurface(const ParametrizableSurface* surface) {
     this->surface = surface;
   }
 
-  FRGB rgb(const vec3& vec) const {
+  Color color(const vec3& vec) const {
     float u, v;
     surface->coordinates(vec, &u, &v);
     if (checkerboard(u, v, scale)) {
@@ -43,28 +44,28 @@ public:
     return color1;
   }
 private:
-  FRGB color1, color2;
+  Color color1, color2;
   float scale;
   const ParametrizableSurface* surface;
 };
 
 class PerlinNoiseColorizer : public Colorizer {
 public:
-  PerlinNoiseColorizer(const FRGB& color1, const FRGB& color2, float scale)
+  PerlinNoiseColorizer(const Color& color1, const Color& color2, float scale)
     : color1(color1), color2(color2), scale(scale), surface(0) {}
 
   void setSurface(const ParametrizableSurface* surface) {
     this->surface = surface;
   }
 
-  FRGB rgb(const vec3& vec) const {
+  Color color(const vec3& vec) const {
     float u, v;
     surface->coordinates(vec, &u, &v);
     float alpha = perlin.noise(u * scale, v * scale, 0);
-    return interpolate_rgbs(alpha, color1, color2);
+    return interpolate_colors(alpha, color1, color2);
   }
 private:
-  FRGB color1, color2;
+  Color color1, color2;
   float scale;
   const ParametrizableSurface* surface;
   PerlinNoise perlin;
