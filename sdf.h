@@ -119,7 +119,7 @@ public:
   }
 
   SDFResult sdf(const vec3& v) const {
-    SDFResult res(1, Material());
+    SDFResult res(1000000000, Material());
     const float bound = 0;
     for (int i = 0; i < children.size(); ++i) {
       SDFResult r = children[i]->sdf(v);
