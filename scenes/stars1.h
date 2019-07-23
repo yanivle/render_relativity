@@ -16,6 +16,15 @@ void AddStar(SDF** container, Scene* scene) {
   }
 }
 
+void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
+  Material material(colors::WHITE, rand_range(0.5, 1), 0, 0, 0);
+  vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
+  center = center.normalize() * 1200;
+  float radius = rand_range(0.3, 0.8);
+  SDF* star = scene->own(new Sphere(center, radius, material));
+  container->addChild(star);
+}
+
 void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
                 float ambient, float diffuse,
                 float deformation_scale, float deformation_magnitude,
@@ -99,6 +108,52 @@ void createStars1Scene(Scene *res) {
 
   res->modifiable_rendering_params().camera_settings.eye_pos = vec3(26, 0, -80);
   res->modifiable_rendering_params().camera_settings.target = vec3(26, 0, 0);
+
+  res->modifiable_rendering_params().use_gravity = true;
+}
+
+void createStars2Scene(Scene *res) {
+  // Sun.
+  vec3 sun_center(0, 0, 200);
+  float sun_radius = 45;
+  AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 20.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
+
+  // // Earth.
+  // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(10, 10, 60), 0, res);
+
+  // // Jupiter.
+  AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 1.0, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
+
+  // // Saturn.
+  // AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(-15, -10, 50), 0, res);
+
+  // // Uranus.
+  // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20, 0, 30), 0, res);
+
+  // Black hole.
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 1, vec3(-20, -20, 10), 5, res);
+
+  // SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
+  // bound_obj = res->own(new Negate(bound_obj));
+  // MultiUnion* stars_container = (MultiUnion*)res->own(new MultiUnion());
+
+  // const int NUM_BACKGROUND_STARS = 20;
+  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+  //   AddStarMultiUnion(stars_container, res);
+  // }
+
+  // res->addObject(new Bound(stars_container, bound_obj, 10));
+  
+  // for (int i = 0; i < 500; ++i) {
+  //   res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
+  // }
+  
+  res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);
+  res->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
+  res->modifiable_rendering_params().do_shading = false;
+  res->modifiable_rendering_params().max_marching_steps = 50000;
+
+  res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
   res->modifiable_rendering_params().use_gravity = true;
 }

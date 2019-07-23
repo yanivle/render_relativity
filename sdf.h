@@ -112,6 +112,34 @@ private:
   Material material;
 };
 
+class MultiUnion : public SDF {
+public:
+  void addChild(SDF* child) {
+    children.push_back(child);
+  }
+
+  SDFResult sdf(const vec3& v) const {
+    SDFResult res(1, Material());
+    const float bound = 0;
+    for (int i = 0; i < children.size(); ++i) {
+      SDFResult r = children[i]->sdf(v);
+      if (r.dist < res.dist) {
+        res = r;
+        if (res.dist < bound) {
+          SDF* t = children[0];
+          children[0] = children[i];
+          children[i] = t;
+          break;
+        }
+      }
+    }
+    return res;
+  }
+
+private:
+  mutable std::vector<SDF *>children;
+};
+
 class Union : public SDF {
 public:
   Union(SDF *obj1, SDF* obj2): obj1(obj1), obj2(obj2) {}
