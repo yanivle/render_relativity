@@ -272,4 +272,23 @@ private:
   SDF *child;
 };
 
+class Bound : public SDF {
+ public:
+  Bound(SDF *child, SDF* bound_sdf, float bound_dist)
+    : child(child), bound_sdf(bound_sdf), bound_dist(bound_dist) {}
+
+  SDFResult sdf(const vec3& v) const {
+    SDFResult bound_res = bound_sdf->sdf(v);
+    if (bound_res.dist > bound_dist) {
+      return bound_res;
+    }
+    return child->sdf(v);
+  }
+
+private:
+  SDF *child;
+  SDF *bound_sdf;
+  float bound_dist = 1;
+};
+
 #endif
