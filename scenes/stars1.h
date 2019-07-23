@@ -133,20 +133,19 @@ void createStars2Scene(Scene *res) {
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 1, vec3(-20, -20, 10), 5, res);
 
-  // SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
-  // bound_obj = res->own(new Negate(bound_obj));
-  // MultiUnion* stars_container = (MultiUnion*)res->own(new MultiUnion());
-
-  // const int NUM_BACKGROUND_STARS = 20;
-  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-  //   AddStarMultiUnion(stars_container, res);
-  // }
-
-  // res->addObject(new Bound(stars_container, bound_obj, 10));
+  SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
+  bound_obj = res->own(new Negate(bound_obj));
+  MultiUnion* stars_container = (MultiUnion*)res->own(new MultiUnion());
+  res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  // for (int i = 0; i < 500; ++i) {
-  //   res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
-  // }
+  const int NUM_BACKGROUND_STARS = 2000;
+  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+    AddStarMultiUnion(stars_container, res);
+  }
+
+  for (int i = 0; i < 500; ++i) {
+    res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
+  }
   
   res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);
   res->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
