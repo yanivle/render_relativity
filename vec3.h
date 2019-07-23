@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <string>
-#include <strstream>
+#include <sstream>
 
 struct Vec3 {
   float x, y, z;
@@ -138,7 +138,7 @@ struct Vec3 {
   }
 
   std::string str() const {
-    std::strstream res;
+    std::stringstream res;
     res << "Vec3(" << x << ',' << y << ',' << z << ')';
     return res.str();
   }

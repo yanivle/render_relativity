@@ -76,7 +76,7 @@ public:
 
 private:
   RenderingParams rendering_params_;
-  SDF* root_sdf;
+  SDF* root_sdf = 0;
   std::vector<SDF*> objects_;
   std::vector<Light*> lights_;
   std::vector<PointMass> masses_;
