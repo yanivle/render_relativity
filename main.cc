@@ -28,7 +28,7 @@ int main(void)
   Renderer renderer;
   Scene scene;
   // createScene1(&scene);
-  createStars2Scene(&scene);
+  createStars3Scene(&scene);
   // createCubeScene(&scene);
 
   renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
