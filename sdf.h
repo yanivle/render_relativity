@@ -71,9 +71,7 @@ public:
     : child(child), scale(scale), magnitude(magnitude) {}
 
   SDFResult sdf(const vec3& v) const {
-    float a, b;
-    child->coordinates(v, &a, &b);
-    float alpha = perlin.noise(a * scale, b * scale, 0);
+    float alpha = perlin.noise(v.x * scale, v.y * scale, v.z * scale);
     SDFResult res = child->sdf(v);
     res.dist += magnitude * alpha;
     return res;
