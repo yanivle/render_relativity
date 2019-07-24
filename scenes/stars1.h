@@ -157,4 +157,29 @@ void createStars2Scene(Scene *res) {
   res->modifiable_rendering_params().use_gravity = true;
 }
 
+void createStars3Scene(Scene *res) {
+  // Black hole.
+  vec3 blackhole_center(0, 0, 200);
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 1, blackhole_center, 5, res);
+
+  const int num_orbiting_stars = 100;
+  for (int i = 0; i < num_orbiting_stars; ++i) {
+    float radius = rand_range(2, 100);
+    float angle = rand_range(0, 2 * M_PI);
+    float dx = radius * cos(angle);
+    float dy = radius * sin(angle);
+    vec3 pos = blackhole_center + vec3(dx, dy, 0);
+    AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 0.5, pos, 0, res);
+  }
+
+  res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);
+  res->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
+  res->modifiable_rendering_params().do_shading = false;
+  // res->modifiable_rendering_params().max_marching_steps = 50000;
+
+  res->addLight(new DirectionalLight(vec3(-1, -1, 1)));
+
+  // res->modifiable_rendering_params().use_gravity = true;
+}
+
 #endif
