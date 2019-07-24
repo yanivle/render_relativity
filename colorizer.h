@@ -58,10 +58,8 @@ public:
     this->surface = surface;
   }
 
-  Color color(const vec3& vec) const {
-    float u, v;
-    surface->coordinates(vec, &u, &v);
-    float alpha = perlin.noise(u * scale, v * scale, 0);
+  Color color(const vec3& v) const {
+    float alpha = perlin.noise(v.x * scale, v.y * scale, v.z * scale);
     return interpolate_colors(alpha, color1, color2);
   }
 private:
