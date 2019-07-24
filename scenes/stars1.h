@@ -119,7 +119,7 @@ void createStars2Scene(Scene *res) {
   AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 20.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
 
   // // Earth.
-  // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(10, 10, 60), 0, res);
+  AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
 
   // // Jupiter.
   AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 1.0, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);

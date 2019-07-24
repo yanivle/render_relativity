@@ -14,5 +14,7 @@ Image with relativistic effects:
 
 ![Blackhole 2](/blackhole2.png)
 
+![Blackhole with star](/blackhole_with_star.png)
+
 ![Blackhole 1](/blackhole1.png)
 
