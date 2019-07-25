@@ -8,6 +8,7 @@
 #include "material.h"
 #include "colorizer.h"
 #include "perlin_noise.h"
+#include "object_registry.h"
 
 struct SDFResult {
   SDFResult() {}
@@ -23,6 +24,10 @@ class SDF {
 public:
   virtual SDFResult sdf(const vec3& v) const = 0;
   virtual ~SDF() {}
+
+  SDF() {
+    registry::registry.registerObject(this);
+  }
 
   vec3 normal(const vec3& v) const {
     const float e = 0.0001;

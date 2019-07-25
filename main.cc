@@ -22,6 +22,7 @@
 #include "scenes/scene1.h"
 #include "scenes/stars1.h"
 #include "scenes/cube_scene.h"
+#include "object_registry.h"
 
 int main(void)
 {

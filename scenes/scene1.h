@@ -1,10 +1,10 @@
 #include "../scene.h"
 
 void createScene1(Scene* res) {
-  SDF* s1 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::RED, 0.1, 1.0, 0.5, 0)));
-  SDF* s2 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::YELLOW, 0.1, 1.0, 0.5, 0)));
-  SDF* s3 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::GREEN, 0.1, 1.0, 0.5, 0)));
-  SDF* s4 = res->own(new Sphere(vec3(0, 0, 0), 1.5, Material(colors::BLUE, 0.1, 1.0, 0.5, 0)));
+  SDF* s1 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::RED, 0.1, 1.0, 0.5, 0));
+  SDF* s2 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::YELLOW, 0.1, 1.0, 0.5, 0));
+  SDF* s3 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::GREEN, 0.1, 1.0, 0.5, 0));
+  SDF* s4 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::BLUE, 0.1, 1.0, 0.5, 0));
 
   res->addMass(PointMass(vec3(-1.7, 2, 16), 0.001));
   res->addMass(PointMass(vec3(-1.7, 0, 16), 0.001));
@@ -25,7 +25,7 @@ void createScene1(Scene* res) {
   // std::cout << plane_normal.str() << " " << cb1.str() << " " << cb2.str() << std::endl;
   CheckerboardColorizer *floor_colorizer = new CheckerboardColorizer(colors::WHITE, colors::BLACK, 0.3);
   Material floor_mat(floor_colorizer, 0.1, 1.0, 0.9);
-  SDF* floor_plane = res->own(new Plane(plane_normal, cb1, cb2, floor_mat));
+  SDF* floor_plane = new Plane(plane_normal, cb1, cb2, floor_mat);
   floor_colorizer->setSurface((Plane*)floor_plane);
   floor_plane = res->addObject(new Translate(floor_plane, vec3(0, -2, 20)));
 
@@ -35,7 +35,7 @@ void createScene1(Scene* res) {
   // std::cout << plane_normal.str() << " " << cb1.str() << " " << cb2.str() << std::endl;
   CheckerboardColorizer *wall_colorizer = new CheckerboardColorizer(colors::WHITE, colors::BLACK, 0.3);
   Material wall_mat(wall_colorizer, 0.1, 1.0, 0.9);
-  SDF* wall = res->own(new Plane(plane_normal, cb1, cb2, wall_mat));
+  SDF* wall = new Plane(plane_normal, cb1, cb2, wall_mat);
   wall_colorizer->setSurface((Plane*)wall);
   wall = res->addObject(new Translate(wall, vec3(0, 0, 20)));
 

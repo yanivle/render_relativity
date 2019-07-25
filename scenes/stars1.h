@@ -8,11 +8,11 @@ void AddStar(SDF** container, Scene* scene) {
   vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
   center = center.normalize() * 1200;
   float radius = rand_range(0.3, 0.8);
-  SDF* star = scene->own(new Sphere(center, radius, material));
+  SDF* star = new Sphere(center, radius, material);
   if (*container == 0) {
     *container = star;
   } else {
-    *container = scene->own(new Union(*container, star));
+    *container = new Union(*container, star);
   }
 }
 
@@ -21,7 +21,7 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
   vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
   center = center.normalize() * 1200;
   float radius = rand_range(0.3, 0.8);
-  SDF* star = scene->own(new Sphere(center, radius, material));
+  SDF* star = new Sphere(center, radius, material);
   container->addChild(star);
 }
 
@@ -32,10 +32,12 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
                 Scene* scene) {
   PerlinNoiseColorizer *colorizer = new PerlinNoiseColorizer(color1, color2, perlin_scale);
   Material material(colorizer, ambient, diffuse, 0, 0);
-  SDF* star = scene->own(new Sphere(vec3(0, 0, 0), radius, material));
+  SDF* star = new Sphere(vec3(0, 0, 0), radius, material);
   colorizer->setSurface((Sphere*)star);
   if (deformation_magnitude > 0) {
-    star = scene->own(new PerlinDeformation((Sphere*)star, deformation_scale, deformation_magnitude));
+    // SDF* bound_obj = scene->own(new Sphere(center, radius + deformation_magnitude, Material()));
+    // res->addObject(new Bound(stars_container, bound_obj, 10));
+    star = new PerlinDeformation((Sphere*)star, deformation_scale, deformation_magnitude);
   }
   star = scene->addObject(new Translate(star, center));
   if (mass > 0) {
@@ -74,8 +76,8 @@ void createStars1Scene(Scene *res) {
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 1, res);
 
-  SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
-  bound_obj = res->own(new Negate(bound_obj));
+  SDF* bound_obj = new Sphere(vec3(), 1000, Material());
+  bound_obj = new Negate(bound_obj);
   SDF* stars_container = 0;
 
   const int NUM_BACKGROUND_STARS = 5000;
@@ -133,9 +135,9 @@ void createStars2Scene(Scene *res) {
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 1, vec3(-20, -20, 10), 5, res);
 
-  SDF* bound_obj = res->own(new Sphere(vec3(), 1000, Material()));
-  bound_obj = res->own(new Negate(bound_obj));
-  MultiUnion* stars_container = (MultiUnion*)res->own(new MultiUnion());
+  SDF* bound_obj = new Sphere(vec3(), 1000, Material());
+  bound_obj = new Negate(bound_obj);
+  MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
   const int NUM_BACKGROUND_STARS = 2000;

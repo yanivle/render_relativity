@@ -12,6 +12,7 @@ class Scene {
 public:
   Scene() {
     std::cerr << "Creating new scene" << std::endl;
+    root_sdf = new MultiUnion();
   }
 
   const RenderingParams& rendering_params() const {
@@ -33,25 +34,13 @@ public:
   }
 
   const SDF* root() const {
-    if (root_sdf == 0) {
-      std::cerr << "ERROR: Accessing uninitialized scene." << std::endl;
-    }
     return root_sdf;
   }
 
-  SDF* own(SDF *sdf) {
-    objects_.push_back(sdf);
-    return sdf;
-  }
-
   SDF* addObject(SDF *sdf) {
-    if (root_sdf == 0) {
-      root_sdf = sdf;
-    } else {
-      root_sdf = new Union(root_sdf, sdf);
-    }
+    root_sdf->addChild(sdf);
 
-    return own(sdf);
+    return sdf;
   }
 
   void addMass(const PointMass& mass) {
@@ -76,7 +65,7 @@ public:
 
 private:
   RenderingParams rendering_params_;
-  SDF* root_sdf = 0;
+  MultiUnion* root_sdf = 0;
   std::vector<SDF*> objects_;
   std::vector<Light*> lights_;
   std::vector<PointMass> masses_;
