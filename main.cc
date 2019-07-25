@@ -29,7 +29,7 @@ int main(void)
   Renderer renderer;
   Scene scene;
   // createScene1(&scene);
-  createStars3Scene(&scene);
+  createStars2Scene(&scene);
   // createCubeScene(&scene);
 
   renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
@@ -43,7 +43,7 @@ int main(void)
   std::cout << "World transform matrix:" << std::endl;
   std::cout << renderer.view_world_matrix().str() << std::endl;
 
-  std::cout << "Total SDFs: " << scene.objects().size() << std::endl;
+  std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
   std::cout << "Total lights: " << scene.lights().size() << std::endl;
   std::cout << "Total masses: " << scene.masses().size() << std::endl;
 

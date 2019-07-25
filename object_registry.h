@@ -14,6 +14,10 @@ class ObjectRegistry {
     }
 
     ~ObjectRegistry();
+
+    int numObjects() const {
+        return objects.size();
+    }
   private:
     std::vector<SDF*> objects;
 };

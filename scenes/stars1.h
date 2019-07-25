@@ -32,14 +32,14 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
                 Scene* scene) {
   PerlinNoiseColorizer *colorizer = new PerlinNoiseColorizer(color1, color2, perlin_scale);
   Material material(colorizer, ambient, diffuse, 0, 0);
-  SDF* star = new Sphere(vec3(0, 0, 0), radius, material);
+  SDF* star = new Sphere(center, radius, material);
   colorizer->setSurface((Sphere*)star);
   if (deformation_magnitude > 0) {
-    // SDF* bound_obj = scene->own(new Sphere(center, radius + deformation_magnitude, Material()));
-    // res->addObject(new Bound(stars_container, bound_obj, 10));
     star = new PerlinDeformation((Sphere*)star, deformation_scale, deformation_magnitude);
+    SDF* bound_obj = new Sphere(center, radius + deformation_magnitude, Material());
+    star = new Bound(star, bound_obj, 0.1);
   }
-  star = scene->addObject(new Translate(star, center));
+  star = scene->addObject(star);
   if (mass > 0) {
     scene->addMass((PointMass(center, mass)));
   }
@@ -140,10 +140,10 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  const int NUM_BACKGROUND_STARS = 2000;
-  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStarMultiUnion(stars_container, res);
-  }
+  // const int NUM_BACKGROUND_STARS = 2000;
+  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+  //   AddStarMultiUnion(stars_container, res);
+  // }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
