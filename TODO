@@ -1,3 +1,6 @@
+- Optimize sphere SDF with approximation removing the sqrt when possible
+- templatize SDFs (instead of using slow virutal functions)
+- optimize convolution with FFT
 - use palette for perlin colorizer
 - add progress bar for post processing
 - add rotation sdf
