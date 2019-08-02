@@ -17,7 +17,17 @@ void AddStar(SDF** container, Scene* scene) {
 }
 
 void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
-  Material material(colors::WHITE, rand_range(0.5, 1), 0, 0, 0);
+  Color color = colors::WHITE;
+  switch (rand() % 10)
+  {
+  case 0:
+    color = colors::ORANGE;
+    break;
+  case 1:
+    color = colors::CORAL;
+    break;
+  }
+  Material material(color, rand_range(0.5, 10), 0, 0, 0);
   vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
   center = center.normalize() * 1200;
   float radius = rand_range(0.3, 0.8);
@@ -140,10 +150,10 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  // const int NUM_BACKGROUND_STARS = 2000;
-  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-  //   AddStarMultiUnion(stars_container, res);
-  // }
+  const int NUM_BACKGROUND_STARS = 2000;
+  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+    AddStarMultiUnion(stars_container, res);
+  }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
