@@ -85,6 +85,8 @@ namespace colors {
   const Color PURPLE(255, 0, 255);
   const Color CYAN(0, 255, 255);
   const Color GRAY(128, 128, 128);
+  const Color ORANGE(255, 165, 0);
+  const Color CORAL(255, 127, 80);
 };
 
 #endif
