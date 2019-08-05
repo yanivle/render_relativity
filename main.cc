@@ -53,11 +53,11 @@ int main(void)
   time_t seconds_until_update = 60 * 5;
   Progress progress(scene.rendering_params().width);
   for (int x = 0; x < scene.rendering_params().width; ++x) {
-    if (time(0) - last_update > seconds_until_update) {
-      last_update = time(0);
-      img.save("intermediate.ppm");
-      system("open intermediate.ppm");
-    }
+    // if (time(0) - last_update > seconds_until_update) {
+    //   last_update = time(0);
+    //   img.save("intermediate.ppm");
+    //   system("xdg-open intermediate.ppm");
+    // }
     for (int y = 0; y < scene.rendering_params().height; ++y) {
       std::vector<Color> colors;
       for (int dx = 0; dx < scene.rendering_params().aa_factor; ++dx) {
@@ -75,16 +75,6 @@ int main(void)
     progress.update(x);
   }
   progress.done();
-
-  // img(100, 100) = Color(255, 255, 255);
-  // img(200, 200) = Color(1000, 1000, 1000);
-  // img(300, 300) = Color(10000, 10000, 10000);
-  // img(400, 400) = Color(100000, 255, 255);
-  //
-  // img(100, 100) = Color(0, 255, 0);
-  // img(200, 200) = Color(0, 2550, 0);
-  // img(300, 300) = Color(0, 25500, 0);
-  // img(400, 400) = Color(0, 255000, 0);
 
   img.save("output.ppm");
 

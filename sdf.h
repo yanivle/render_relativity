@@ -59,9 +59,50 @@ public:
   }
 
   SDFResult sdf(const vec3& v) const {
-    float dist = (v - center).len() - radius;
-    SDFResult res(dist, material);
-    return res;
+    // float dmin, dmid, dmax;
+    // if (dx > dy) {
+    //   if (dx > dz) {
+    //     dmax = dx;
+    //     if (dy > dz) {
+    //       dmid = dy;
+    //       dmin = dz;
+    //     } else {
+    //       dmid = dz;
+    //       dmin = dy;
+    //     }
+    //   }
+    // } else if (dy > dz) {
+    //   dmax = dy;
+    //   if (dx > dz) {
+    //     dmid = dx;
+    //     dmin = dz;        
+    //   } else {
+    //     dmin = dx;
+    //     dmid = dz;
+    //   }
+    // } else { // dx < dy < dz
+    //   dmax = dz;
+    //   dmid = dy;
+    //   dmin = dx;
+    // }
+
+    float dx = std::abs(v.x - center.x);
+    float dy = std::abs(v.y - center.y);
+    float dz = std::abs(v.z - center.z);
+    float dmax = std::max({dx, dy, dz});
+    // float dmin = std::min({dx, dy, dz});
+    // float dmid = dx + dy + dz - dmin - dmax;
+
+    // const float SQRT3 = 1.73205080757;
+    // dmax * sqrt(3) - r > dist > dmax - r
+    // dmax - radius < dist < sqrt(3) * dmax - radius
+    float dist_lower_bound = dmax - radius;
+    if (dist_lower_bound > 10)
+      return SDFResult(dist_lower_bound, material);
+    else {
+      float dist = (v - center).len() - radius;
+      return SDFResult(dist, material);
+    }
   }
 
 private:
