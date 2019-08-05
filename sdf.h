@@ -58,7 +58,7 @@ public:
     *v = atan(relative.x / relative.z) * 30;
   }
 
-  SDFResult sdf(const vec3& v) const {
+  SDFResult approx_sdf(const vec3& v) const {
     // float dmin, dmid, dmax;
     // if (dx > dy) {
     //   if (dx > dz) {
@@ -103,6 +103,11 @@ public:
       float dist = (v - center).len() - radius;
       return SDFResult(dist, material);
     }
+  }
+
+  SDFResult sdf(const vec3& v) const {
+    float dist = (v - center).len() - radius;
+    return SDFResult(dist, material);
   }
 
 private:
