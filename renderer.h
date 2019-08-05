@@ -103,6 +103,7 @@ private:
     vec3 original_dir = ray.direction;
     for (int i = 0; i < num_iters; ++i) {
       if (mat.roughness > 0) {
+        // TODO: should the random() be replaced by a random orthonormal vec?
         vec3 noise_vec = Vec3::random() * mat.roughness;
         ray.direction = original_dir + noise_vec;
         ray.direction.inormalize();

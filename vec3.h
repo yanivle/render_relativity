@@ -129,8 +129,28 @@ struct Vec3 {
     return res.normalize();
   }
 
-  // Random vec in the unit cube.
+  // Random unit vector.
   static Vec3 random() {
+    vec3 res = random_cube();
+    float len2 = res.len2();
+    while (len2 > 1) {
+      res = random_cube();
+      len2 = res.len2();
+    }
+    return res / sqrt(len2);
+  }
+
+  // Random vec in the unit sphere.
+  static Vec3 random_sphere() {
+    vec3 res = random_cube();
+    while (res.len2() > 1) {
+      res = random_cube();
+    }
+    return res;
+  }
+
+  // Random vec in the unit cube.
+  static Vec3 random_cube() {
     float x = -1 + static_cast<float>(rand())/(static_cast<float>(RAND_MAX/(2)));
     float y = -1 + static_cast<float>(rand())/(static_cast<float>(RAND_MAX/(2)));
     float z = -1 + static_cast<float>(rand())/(static_cast<float>(RAND_MAX/(2)));
