@@ -131,7 +131,7 @@ struct Vec3 {
 
   // Random unit vector.
   static Vec3 random() {
-    vec3 res = random_cube();
+    Vec3 res = random_cube();
     float len2 = res.len2();
     while (len2 > 1) {
       res = random_cube();
@@ -142,7 +142,7 @@ struct Vec3 {
 
   // Random vec in the unit sphere.
   static Vec3 random_sphere() {
-    vec3 res = random_cube();
+    Vec3 res = random_cube();
     while (res.len2() > 1) {
       res = random_cube();
     }
