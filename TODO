@@ -1,3 +1,6 @@
+- Cluster stars into bounded galaxies
+- Add general counters infra (for optimizations)
+- Add threads
 - Optimize sphere SDF with approximation removing the sqrt when possible
 - templatize SDFs (instead of using slow virutal functions)
 - optimize convolution with FFT
@@ -7,9 +10,6 @@
 - profile and optimize
 - give scenes names
 - if my short-circuit optimization even helping? (evaluating less SDFs but marching lower distances)
-
-- make the color of difference sdf the color of the removed object at the intersection points
-
-
 - simulate moving scenes (and consider lorentz transformations)
 - simulate scattering
+- consider optimizing the return value from sdf() (e.g. make it into an argument, but remember - can't make this into SDF* and dist, as some materials are created as part of the sdf e.g. in smoothing)
