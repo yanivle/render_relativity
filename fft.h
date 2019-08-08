@@ -9,8 +9,7 @@ namespace fft {
 typedef std::complex<float> Complex;
 typedef std::valarray<Complex> ComplexArray;
 
-void fft(ComplexArray& x)
-{
+void fft(ComplexArray& x) {
     const size_t N = x.size();
     if (N <= 1) return;
 
@@ -29,6 +28,13 @@ void fft(ComplexArray& x)
         x[k    ] = even[k] + t;
         x[k+N/2] = even[k] - t;
     }
+}
+
+void ifft(ComplexArray& x) {
+    x = x.apply(std::conj);
+    fft( x );
+    x = x.apply(std::conj);
+    x /= x.size();
 }
 
 }
