@@ -5,6 +5,8 @@
 #include "color.h"
 #include "math.h"
 
+#include "fft.h"
+
 struct Filter {
   static const int radius_x = 16;
   static const int radius_y = 16;
@@ -115,6 +117,54 @@ public:
   Image(int width, int height) :
   Matrix<Color>(width, height) {}
 
+  enum Channel {
+    RED, GREEN, BLUE
+  };
+
+  void getChannel(Channel channel, DoubleMatrix* res) {
+    for (int y = 0; y < height_; ++y) {
+      for (int x = 0; x < width_; ++x) {
+        switch (channel)
+        {
+        case RED:
+          (*res)(x, y) = (*this)(x, y).r;
+          break;
+        case GREEN:
+          (*res)(x, y) = (*this)(x, y).g;
+          break;
+        case BLUE:
+          (*res)(x, y) = (*this)(x, y).b;
+          break;
+        default:
+          std::cerr << "Illegal channel " << channel << std::endl;
+          return;
+        }
+      }
+    }
+  }
+
+  void setChannel(Channel channel, DoubleMatrix* res) {
+    for (int y = 0; y < height_; ++y) {
+      for (int x = 0; x < width_; ++x) {
+        switch (channel)
+        {
+        case RED:
+          (*this)(x, y).r = (*res)(x, y);
+          break;
+        case GREEN:
+          (*this)(x, y).g = (*res)(x, y);
+          break;
+        case BLUE:
+          (*this)(x, y).b = (*res)(x, y);
+          break;
+        default:
+          std::cerr << "Illegal channel " << channel << std::endl;
+          return;
+        }
+      }
+    }
+  }
+
   void convolve(const Filter& filter, Image* res) {
     if (!is_compatible(*res)) {
       std::cerr << "ERROR: Trying to convolve into incompatible Image: ("
@@ -148,13 +198,14 @@ public:
                 << img->height_ << ")" << std::endl;
       return;
     }
-    Image bloomed(width_, height_);
-    Filter filter = Filter::dist2();
-    filter.inormalize();
-    filter.iaverage(Filter::id());
-    convolve(filter, &bloomed);
+    // Image bloomed(width_, height_);
+    // Filter filter = Filter::dist2();
+    // filter.inormalize();
+    // filter.iaverage(Filter::id());
+    // convolve(filter, &bloomed);
     for (int i = 0; i < size_; ++i) {
-      Color color = bloomed(i);
+      // Color color = bloomed(i);
+      Color color = (*this)(i);
       RGB rgb = color.toRGB();
       (*img)(i) = rgb;
     }
