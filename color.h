@@ -2,6 +2,7 @@
 #define COLOR_H
 
 #include "rgb.h"
+#include <sstream>
 
 struct Color {
   float r = 0, g = 0, b = 0;
@@ -70,6 +71,12 @@ struct Color {
       res = res + rgbs[i];
     }
     return res * (1 / rgbs.size());
+  }
+
+  std::string str() const {
+    std::stringstream res;
+    res << "Color(" << r << ',' << g << ',' << b << ')';
+    return res.str();
   }
 
 private:
