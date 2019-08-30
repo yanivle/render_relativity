@@ -4,6 +4,7 @@
 #include <cstring>
 #include <valarray>
 #include <iostream>
+#include <iomanip>
 
 template <class value_type>
 class ArrayView {
