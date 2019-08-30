@@ -9,7 +9,7 @@ namespace fft {
 typedef std::complex<float> Complex;
 typedef std::valarray<Complex> ComplexArray;
 
-void fft(ComplexArray& x) {
+inline void fft(ComplexArray& x) {
     const size_t N = x.size();
     if (N <= 1) return;
 
@@ -30,7 +30,7 @@ void fft(ComplexArray& x) {
     }
 }
 
-void ifft(ComplexArray& x) {
+inline void ifft(ComplexArray& x) {
     x = x.apply(std::conj);
     fft( x );
     x = x.apply(std::conj);
