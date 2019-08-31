@@ -38,12 +38,12 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
   container->addChild(star);
 }
 
-void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
+void AddBigStar(std::initializer_list<Color> colors, float perlin_scale,
                 float ambient, float diffuse,
                 float deformation_scale, float deformation_magnitude,
                 float radius, const vec3& center, float mass,
                 Scene* scene) {
-  PerlinNoiseColorizer *colorizer = new PerlinNoiseColorizer(color1, color2, perlin_scale);
+  PerlinNoiseColorizer *colorizer = new PerlinNoiseColorizer(colors, perlin_scale);
   Material material(colorizer, ambient, diffuse, 0, 0);
   SDF* star = new Sphere(center, radius, material);
   colorizer->setSurface((Sphere*)star);
@@ -56,6 +56,17 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
   if (mass > 0) {
     scene->addMass((PointMass(center, mass)));
   }
+}
+
+void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
+                float ambient, float diffuse,
+                float deformation_scale, float deformation_magnitude,
+                float radius, const vec3& center, float mass,
+                Scene* scene) {
+  AddBigStar({color1, color2}, perlin_scale,
+             ambient, diffuse,
+             deformation_scale, deformation_magnitude,
+             radius, center, mass, scene);
 }
 
 void createStars1Scene(Scene *res) {
@@ -131,10 +142,12 @@ void createStars2Scene(Scene *res) {
   // Sun.
   vec3 sun_center(0, 0, 200);
   float sun_radius = 45;
-  AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 6.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
+  // AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 6.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
+  AddBigStar({Color(0xD14009), Color(0xFC9601), Color(0xFFCC33), Color(0xFFE484), Color(0xFFFFFF)}, 1, 5.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
 
   // // Earth.
-  AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
+  // AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
+  AddBigStar({Color(0xd8c596), Color(0x9fc164), Color(0xe9eff9), Color(0x6b93d6), Color(0x4f4cb0)}, 0.8, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
 
   // // Jupiter.
   AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
@@ -146,17 +159,17 @@ void createStars2Scene(Scene *res) {
   // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20, 0, 30), 0, res);
 
   // Black hole.
-  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 20, res);
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 5, res);
 
   SDF* bound_obj = new Sphere(vec3(), 1000, Material());
   bound_obj = new Negate(bound_obj);
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  const int NUM_BACKGROUND_STARS = 2000;
-  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStarMultiUnion(stars_container, res);
-  }
+  // const int NUM_BACKGROUND_STARS = 2000;
+  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+  //   AddStarMultiUnion(stars_container, res);
+  // }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
