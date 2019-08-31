@@ -37,8 +37,7 @@ inline void ifft(ComplexArray& x) {
     x /= x.size();
 }
 
-template <class value_type>
-void fft2d(Array2D<value_type>& arr) {
+void fft2d(Array2D<Complex>& arr) {
     for (int y = 0; y < arr.height(); ++y) {
         ComplexArray row = arr.row(y).template copy<ComplexArray>();
         fft(row);
@@ -51,8 +50,7 @@ void fft2d(Array2D<value_type>& arr) {
     }
 }
 
-template <class value_type>
-void ifft2d(Array2D<value_type>& arr) {
+void ifft2d(Array2D<Complex>& arr) {
     for (int x = 0; x < arr.width(); ++x) {
         ComplexArray col = arr.column(x).template copy<ComplexArray>();
         ifft(col);
