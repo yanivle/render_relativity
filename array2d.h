@@ -126,6 +126,17 @@ public:
   size_t height() const { return height_; }
   size_t size() const { return size_; }
 
+  Array2D<value_type> rotate(int x_rotation, int y_rotation) {
+    Array2D<value_type> res(width(), height());
+    for (int y = 0; y < height(); ++y) {
+      for (int x = 0; x < width(); ++x) {
+        res(x, y) = (*this)((x + x_rotation) % width(),
+                            (y + y_rotation) % height());
+      }
+    }
+    return res;
+  }
+
   // Debugging.
   void print(int cell_width=4) const {
     for (int y = 0; y < height_; ++y) {
