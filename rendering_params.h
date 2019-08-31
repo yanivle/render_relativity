@@ -4,8 +4,8 @@
 #include "vec3.h"
 
 struct RenderingParams {
-  int width = 1000;
-  int height = 1000;
+  int width = 1024;
+  int height = 1024;
   int max_marching_steps = 500; // 500000
   float max_dist = 10000;
   float epsilon = 0.001;
