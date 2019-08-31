@@ -111,7 +111,7 @@ void createStars1Scene(Scene *res) {
   // Add(wall);
 
   for (int i = 0; i < 500; ++i) {
-    res->addLight(new PointLight(vec3(-25, 0, 0) + vec3::random().normalize() * 47));
+    res->addLight(new PointLight(vec3(-25, 0, 0) + vec3::random() * 47));
   }
   // res->addLight(new PointLight(vec3(100, 0, 0)));
   // res->addLight(new PointLight(vec3(100, 10, 0)));
@@ -150,18 +150,19 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  const int NUM_BACKGROUND_STARS = 2000;
-  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStarMultiUnion(stars_container, res);
-  }
+  // const int NUM_BACKGROUND_STARS = 2000;
+  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+  //   AddStarMultiUnion(stars_container, res);
+  // }
 
   for (int i = 0; i < 500; ++i) {
-    res->addLight(new PointLight(sun_center + vec3::random().normalize() * (sun_radius + 2)));
+    res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
   }
   
   res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);
   res->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
   res->modifiable_rendering_params().do_shading = false;
+  // res->modifiable_rendering_params().gravity_slowdown_factor = 500;
   res->modifiable_rendering_params().max_marching_steps = 50000;
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
