@@ -1,260 +1,88 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "matrix.h"
+#include "array2d.h"
 #include "color.h"
 #include "math.h"
-
 #include "fft.h"
 
-struct Filter {
-  static const int radius_x = 16;
-  static const int radius_y = 16;
-  static const int width = radius_x * 2 + 1;
-  static const int height = radius_y * 2 + 1;
-
-  float data[height][width] = {0};
-
-  void inormalize() {
-    float sum = 0;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        sum += data[y][x];
-      }
-    }
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        data[y][x] /= sum;
-      }
-    }
-  }
-
-  void iaverage(const Filter& other) {
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        data[y][x] = (data[y][x] + other.data[y][x]) / 2;
-      }
-    }
-  }
-
-  static Filter id() {
-    Filter res;
-    res.data[radius_y][radius_x] = 1;
-    return res;
-  }
-
-  static Filter dist() {
-    Filter res;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        int y_dist_from_center = y - radius_y;
-        int x_dist_from_center = x - radius_x;
-        float dist_2 = y_dist_from_center * y_dist_from_center + x_dist_from_center * x_dist_from_center;
-        float dist = sqrt(dist_2);
-        res.data[y][x] = 1 / (1 + dist);
-      }
-    }
-    return res;
-  }
-
-  static Filter dist2() {
-    Filter res;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        int y_dist_from_center = y - radius_y;
-        int x_dist_from_center = x - radius_x;
-        float dist_2 = y_dist_from_center * y_dist_from_center + x_dist_from_center * x_dist_from_center;
-        res.data[y][x] = 1 / (1 + dist_2);
-      }
-    }
-    return res;
-  }
-
-  static Filter exp_neg_dist_2_n(float n) {
-    Filter res;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        int y_dist_from_center = y - radius_y;
-        int x_dist_from_center = x - radius_x;
-        float dist_2 = y_dist_from_center * y_dist_from_center + x_dist_from_center * x_dist_from_center;
-        dist_2 *= n;
-        res.data[y][x] = exp(-dist_2);
-      }
-    }
-    return res;
-  }
-
-  static Filter angled() {
-    Filter res;
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        int dx = x - radius_x;
-        int dy = y - radius_y;
-        float angle = 0;
-        if (dx > 0) {
-          angle = atan(dy / dx);
-        }
-        angle = fmod(angle, M_PI / 32);
-        if (angle < 0) angle += M_PI / 32;
-        float dist2 = dx * dx + dy * dy;
-        res.data[y][x] = angle / (1 + dist2);
-      }
-    }
-    return res;
-  }
-
-  // Alpha relative to the center of the filter.
-  float alpha(int dx, int dy) const {
-    if (dx < -radius_x || dx > radius_x || dy < -radius_y || dy > radius_y) {
-      std::cerr << "Illegal offset to filter" << std::endl;
-    }
-    return data[dy + radius_y][dx + radius_x];
-  }
-};
-
-class Image : public Matrix<Color> {
+class Image : public Array2D<Color> {
 public:
   Image(int width, int height) :
-  Matrix<Color>(width, height) {}
+    Array2D<Color>(width, height) {}
 
   enum Channel {
     RED, GREEN, BLUE
   };
 
-  void getChannel(Channel channel, DoubleMatrix* res) {
-    for (int y = 0; y < height_; ++y) {
-      for (int x = 0; x < width_; ++x) {
-        switch (channel)
-        {
-        case RED:
-          (*res)(x, y) = (*this)(x, y).r;
-          break;
-        case GREEN:
-          (*res)(x, y) = (*this)(x, y).g;
-          break;
-        case BLUE:
-          (*res)(x, y) = (*this)(x, y).b;
-          break;
-        default:
-          std::cerr << "Illegal channel " << channel << std::endl;
-          return;
-        }
+  Array2D<float> getChannel(Channel channel) {
+      Array2D<float> res(width(), height());
+      for (int i = 0; i < size(); ++i) {
+          switch (channel) {
+          case Image::RED:
+              res(i) = (*this)(i).r;
+              break;
+          case Image::GREEN:
+              res(i) = (*this)(i).g;
+              break;
+          case Image::BLUE:
+              res(i) = (*this)(i).b;
+              break;
+          default:
+              std::cerr << "Illegal channel " << channel << std::endl;
+              return res;
+          }
       }
-    }
+      return res;
   }
 
-  void setChannel(Channel channel, DoubleMatrix* res) {
-    for (int y = 0; y < height_; ++y) {
-      for (int x = 0; x < width_; ++x) {
-        switch (channel)
-        {
-        case RED:
-          (*this)(x, y).r = (*res)(x, y);
-          break;
-        case GREEN:
-          (*this)(x, y).g = (*res)(x, y);
-          break;
-        case BLUE:
-          (*this)(x, y).b = (*res)(x, y);
-          break;
-        default:
-          std::cerr << "Illegal channel " << channel << std::endl;
-          return;
-        }
+  void setChannel(Channel channel, const Array2D<float>& data) {
+      for (int i = 0; i < size(); ++i) {
+          switch (channel) {
+          case RED:
+              (*this)(i).r = data(i);
+              break;
+          case GREEN:
+              (*this)(i).g = data(i);
+              break;
+          case BLUE:
+              (*this)(i).b = data(i);
+              break;
+          default:
+              std::cerr << "Illegal channel " << channel << std::endl;
+              return;
+          }
       }
-    }
   }
 
-  void convolve(const Filter& filter, Image* res) {
-    if (!is_compatible(*res)) {
-      std::cerr << "ERROR: Trying to convolve into incompatible Image: ("
-                << width_ << ", " << height_ << ") (" << res->width_ << ", "
-                << res->height_ << ")" << std::endl;
-      return;
-    }
-    for (int y = 0; y < height_; ++y) {
-      for (int x = 0; x < width_; ++x) {
-          applyFilter(x, y, filter, res);
+  void clearChannel(Channel channel) {
+      for (int i = 0; i < size(); ++i) {
+          switch (channel) {
+          case RED:
+              (*this)(i).r = 0;
+              break;
+          case GREEN:
+              (*this)(i).g = 0;
+              break;
+          case BLUE:
+              (*this)(i).b = 0;
+              break;
+          default:
+              std::cerr << "Illegal channel " << channel << std::endl;
+              return;
+          }
       }
-    }
-  }
-
-  void applyFilter(int x, int y, const Filter& filter, Image* res) {
-    Color c;
-    for (int dy = -filter.radius_y; dy <= filter.radius_y; ++dy) {
-      for (int dx = -filter.radius_x; dx <= filter.radius_x; ++dx) {
-        if (is_safe(x + dx, y + dy)) {
-          c += (*this)(x + dx, y + dy) * filter.alpha(dx, dy);
-        }
-      }
-    }
-    (*res)(x, y) = c;
-  }
-
-  void bloom(Matrix<RGB>* img) {
-    if (!is_compatible(*img)) {
-      std::cerr << "ERROR: Trying to bloom into incompatible Image: ("
-                << width_ << ", " << height_ << ") (" << img->width_ << ", "
-                << img->height_ << ")" << std::endl;
-      return;
-    }
-    // Image bloomed(width_, height_);
-    // Filter filter = Filter::dist2();
-    // filter.inormalize();
-    // filter.iaverage(Filter::id());
-    // convolve(filter, &bloomed);
-    for (int i = 0; i < size_; ++i) {
-      // Color color = bloomed(i);
-      Color color = (*this)(i);
-      RGB rgb = color.toRGB();
-      (*img)(i) = rgb;
-    }
   }
 
   void save(const char *filename) {
     FILE *fp = fopen(filename, "wb");
-    (void) fprintf(fp, "P6\n%d %d\n255\n", width_, height_);
-
-    Matrix<RGB> bloomed(width_, height_);
-    bloom(&bloomed);
+    (void) fprintf(fp, "P6\n%d %d\n255\n", (int)width_, (int)height_);
 
     for (int i = 0; i < size_; ++i) {
-      RGB rgb = bloomed(i);
+      RGB rgb = (*this)(i).toRGB();
       (void) fwrite(&rgb, 1, 3, fp);
     }
     (void) fclose(fp);
-  }
-
-  void drawVerticalLine(int x, const Color& color) {
-    for (int y = 0; y < height_; ++y) {
-      (*this)(x, y) = color;
-    }
-  }
-
-  void drawHorizontalLine(int y, const Color& color) {
-    for (int x = 0; x < width_; ++x) {
-      (*this)(x, y) = color;
-    }
-  }
-
-  void drawSquare(int x0, int y0, int x1, int y1, const Color& color) {
-    for (int y = y0; y < y1; ++y) {
-      for (int x = x0; x < x1; ++x) {
-        (*this)(x, y) = color;
-      }
-    }
-  }
-
-  void drawSquareCrissCross(int x0, int y0, int x1, int y1, int square_size, const Color& color1, const Color& color2) {
-    for (int y = y0; y < y1; ++y) {
-      for (int x = x0; x < x1; ++x) {
-        if ((x + y) / square_size % 2 == 0) {
-          (*this)(x, y) = color1;
-        } else {
-          (*this)(x, y) = color2;
-        }
-      }
-    }
   }
 };
 
