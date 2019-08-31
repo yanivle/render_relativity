@@ -136,6 +136,25 @@ public:
     }
   }
 
+  // Serialization.
+  void serialize(const std::string& filename) const {
+    std::ofstream file(filename, std::ofstream::binary);
+    file.write((char*)&width_, sizeof(width_));
+    file.write((char*)&height_, sizeof(height_));
+    file.write((char*)&size_, sizeof(size_));
+    file.write((char*)data_, sizeof(value_type) * size_);
+    file.close();
+  }
+
+  void deserialize(const std::string& filename) const {
+    std::ifstream file(filename, std::ifstream::binary);
+    file.read((char*)&width_, sizeof(width_));
+    file.read((char*)&height_, sizeof(height_));
+    file.read((char*)&size_, sizeof(size_));
+    file.read((char*)data_, sizeof(value_type) * size_);
+    file.close();
+  }
+
   // Scalar operations.
   void operator *= (value_type a) {
     for (int i = 0; i < size(); ++i) {
