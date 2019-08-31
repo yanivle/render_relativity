@@ -9,6 +9,7 @@
 #include "colorizer.h"
 #include "perlin_noise.h"
 #include "object_registry.h"
+#include <cmath>
 
 struct SDFResult {
   SDFResult() {}
