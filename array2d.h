@@ -17,8 +17,7 @@ public:
   // Ctors.
   Array2D(size_t width, size_t height) :
     width_(width), height_(height), size_(width * height) {
-    data_ = new value_type[size_];
-    std::memset(data_, 0, size_ * sizeof(value_type));
+    data_ = new value_type[size_]();
   }
 
   template <class other_value_type>
