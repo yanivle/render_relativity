@@ -16,7 +16,7 @@ int main(void) {
       for (const int& freq : freqs) {
         v += sin(x * M_PI * 2 * freq / 1024) + cos(y * M_PI * 2 * freq / 1024);
       }
-      v *= 100;
+      v *= 1000;
       if (v < 0) v = 0;
       image(x, y) = Color(v, 0, 0);
     }
