@@ -1,5 +1,7 @@
 # render_relativity
 
+![Rendering Relativity](/banner.png)
+
 Image without relativistic effects:
 ![Capsules](/capsules.png)
 
