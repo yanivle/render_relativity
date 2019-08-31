@@ -4,6 +4,7 @@
 #include "range.h"
 #include "perlin_noise.h"
 #include "color.h"
+#include "palette.h"
 
 class Colorizer {
 public:
@@ -52,7 +53,10 @@ private:
 class PerlinNoiseColorizer : public Colorizer {
 public:
   PerlinNoiseColorizer(const Color& color1, const Color& color2, float scale)
-    : color1(color1), color2(color2), scale(scale), surface(0) {}
+    : palette(color1, color2), scale(scale), surface(0) {}
+
+  PerlinNoiseColorizer(std::initializer_list<Color> colors, float scale)
+    : palette(colors), scale(scale), surface(0) {}
 
   void setSurface(const ParametrizableSurface* surface) {
     this->surface = surface;
@@ -60,10 +64,10 @@ public:
 
   Color color(const vec3& v) const {
     float alpha = perlin.noise(v.x * scale, v.y * scale, v.z * scale);
-    return interpolate_colors(alpha, color1, color2);
+    return palette.color(alpha);
   }
 private:
-  Color color1, color2;
+  Palette palette;
   float scale;
   const ParametrizableSurface* surface;
   PerlinNoise perlin;
