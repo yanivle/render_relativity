@@ -54,6 +54,7 @@ int main(void) {
   time_t last_update = time(0);
   time_t seconds_until_update = 60 * 5;
   Progress progress(scene.rendering_params().width);
+  // if (false)
   for (int x = 0; x < scene.rendering_params().width; ++x) {
     // if (time(0) - last_update > seconds_until_update) {
     //   last_update = time(0);
@@ -77,6 +78,9 @@ int main(void) {
     progress.update(x);
   }
   progress.done();
+
+  img.serialize("render.img");
+  // img.deserialize("render.img");
 
   img.save("output.ppm");
 
