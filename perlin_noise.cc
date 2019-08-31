@@ -22,7 +22,9 @@ PerlinNoise::PerlinNoise() {
 		107,49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
 		138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 };
 	// Duplicate the permutation vector
-	p.insert(p.end(), p.begin(), p.end());
+	auto half_size = p.size();
+    p.resize(half_size * 2);
+    std::copy_n(p.begin(), half_size, p.begin() + half_size);
 }
 
 // Generate a new permutation vector based on the value of seed
