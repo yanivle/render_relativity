@@ -23,45 +23,27 @@
 #include "object_registry.h"
 #include "fft.h"
 #include "filters.h"
+#include <thread>
+#include <unistd.h>
 
-int main(void) {
-  Renderer renderer;
-  Scene scene;
-  // createScene1(&scene);
-  createStars2Scene(&scene);
-  // createCubeScene(&scene);
+std::atomic<int> global_y = 0;
+Renderer renderer;
+Scene scene;
 
-  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
-                                            scene.rendering_params().camera_settings.target,
-                                            scene.rendering_params().camera_settings.up);
+void progress_thread() {
+  Progress progress(scene.rendering_params().height);
+  while (global_y < scene.rendering_params().height) {
+    progress.update(global_y);
+    usleep(1000 * 100);
+  }
+  progress.done();
+}
 
-  vec3 v(0, 0, 0);
-  std::cout << "Before: " << v.str() << " after: " << (renderer.view_world_matrix() * v).str() << std::endl;
-  v = vec3(0, 0, 1);
-  std::cout << "Before: " << v.str() << " after: " << (renderer.view_world_matrix() * v).str() << std::endl;
-  std::cout << "World transform matrix:" << std::endl;
-  std::cout << renderer.view_world_matrix().str() << std::endl;
-
-  std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
-  std::cout << "Total lights: " << scene.lights().size() << std::endl;
-  std::cout << "Total masses: " << scene.masses().size() << std::endl;
-
-  std::cout << "Resolution: " << scene.rendering_params().width << 'x'
-                              << scene.rendering_params().height << std::endl;
-
-  Image img(scene.rendering_params().width, scene.rendering_params().height);
-
-  time_t last_update = time(0);
-  time_t seconds_until_update = 60 * 5;
-  Progress progress(scene.rendering_params().width);
-  // if (false)
-  for (int x = 0; x < scene.rendering_params().width; ++x) {
-    // if (time(0) - last_update > seconds_until_update) {
-    //   last_update = time(0);
-    //   img.save("intermediate.ppm");
-    //   system("xdg-open intermediate.ppm");
-    // }
-    for (int y = 0; y < scene.rendering_params().height; ++y) {
+void render_thread(Image* image) {
+  int y = ++global_y;
+  while (y < scene.rendering_params().height) {
+    // std::cout << "Rendering line: " << y << std::endl;
+    for (int x = 0; x < scene.rendering_params().width; ++x) {
       std::vector<Color> colors;
       for (int dx = 0; dx < scene.rendering_params().aa_factor; ++dx) {
         for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
@@ -73,11 +55,42 @@ int main(void) {
           colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
       }
-      img(x, y) = Color::average(colors);
+      (*image)(x, y) = Color::average(colors);
     }
-    progress.update(x);
+    y = ++global_y;
   }
-  progress.done();
+}
+
+int main(void) {
+  // createScene1(&scene);
+  createStars2Scene(&scene);
+  // createCubeScene(&scene);
+
+  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
+                                            scene.rendering_params().camera_settings.target,
+                                            scene.rendering_params().camera_settings.up);
+
+  std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
+  std::cout << "Total lights: " << scene.lights().size() << std::endl;
+  std::cout << "Total masses: " << scene.masses().size() << std::endl;
+
+  std::cout << "Resolution: " << scene.rendering_params().width << 'x'
+                              << scene.rendering_params().height << std::endl;
+
+  Image img(scene.rendering_params().width, scene.rendering_params().height);
+
+  std::vector<std::thread> threads;
+  const int num_threads = std::thread::hardware_concurrency();
+  std::cout << "Starting " << num_threads << " threads" << std::endl;
+  for (int i = 0; i < num_threads; ++i) {
+    threads.push_back(std::thread(render_thread, &img));
+    // std::cout << "Starting thread " << i << std::endl;
+  }
+  progress_thread();
+  for (std::thread& thread : threads) {
+    // std::cout << "Joining thread " << thread.get_id() << std::endl;
+    thread.join();
+  }
 
   img.serialize("render.img");
   // img.deserialize("render.img");
