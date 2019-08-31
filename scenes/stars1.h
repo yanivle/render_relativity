@@ -27,11 +27,11 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
     break;
   }
   float brightness = 0.5;
-  while (rand() % 2 == 0) {
+  while (rand() % 2 == 0 && brightness < 128) {
     brightness *= 2;
   }
   Material material(color, brightness, 0, 0, 0);
-  vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
+  vec3 center(rand_range(-120, 120), rand_range(-120, 120), 500);
   center = center.normalize() * 1200;
   float radius = rand_range(0.3, 0.8);
   SDF* star = new Sphere(center, radius, material);
@@ -153,7 +153,7 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  const int NUM_BACKGROUND_STARS = 500;
+  const int NUM_BACKGROUND_STARS = 2000;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
     AddStarMultiUnion(stars_container, res);
   }
@@ -170,7 +170,7 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  res->modifiable_rendering_params().use_gravity = true;
+  // res->modifiable_rendering_params().use_gravity = true;
 }
 
 void createStars3Scene(Scene *res) {
