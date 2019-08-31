@@ -6,6 +6,22 @@
 
 class Palette {
 public:
+  Palette() {}
+
+  Palette(const Color& color1, const Color& color2) {
+    addKey(Key(0.0, color1));
+    addKey(Key(1.0, color2));
+  }
+
+  Palette(std::initializer_list<Color> colors) {
+    double index = 0.0;
+    double step = 1.0 / (colors.size() - 1);
+    for (auto c = colors.begin(); c != colors.end(); ++c) {
+      addKey(Key(index , *c));
+      index += step;
+    }
+  }
+
   struct Key {
     Key(double val, const Color& color) : val(val), color(color) {}
     double val;
