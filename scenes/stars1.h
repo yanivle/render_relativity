@@ -18,8 +18,7 @@ void AddStar(SDF** container, Scene* scene) {
 
 void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
   Color color = colors::WHITE;
-  switch (rand() % 10)
-  {
+  switch (rand() % 10) {
   case 0:
     color = colors::ORANGE;
     break;
@@ -27,7 +26,11 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
     color = colors::CORAL;
     break;
   }
-  Material material(color, rand_range(0.5, 10), 0, 0, 0);
+  float brightness = 0.5;
+  while (rand() % 2 == 0) {
+    brightness *= 2;
+  }
+  Material material(color, brightness, 0, 0, 0);
   vec3 center(rand_range(-100, 100), rand_range(-100, 100), 500);
   center = center.normalize() * 1200;
   float radius = rand_range(0.3, 0.8);
@@ -128,13 +131,13 @@ void createStars2Scene(Scene *res) {
   // Sun.
   vec3 sun_center(0, 0, 200);
   float sun_radius = 45;
-  AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 20.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
+  AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 8.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
 
   // // Earth.
   AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
 
   // // Jupiter.
-  AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 1.0, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
+  AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
 
   // // Saturn.
   // AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(-15, -10, 50), 0, res);
@@ -150,10 +153,10 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  // const int NUM_BACKGROUND_STARS = 2000;
-  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-  //   AddStarMultiUnion(stars_container, res);
-  // }
+  const int NUM_BACKGROUND_STARS = 2000;
+  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+    AddStarMultiUnion(stars_container, res);
+  }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
@@ -167,7 +170,7 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  res->modifiable_rendering_params().use_gravity = true;
+  // res->modifiable_rendering_params().use_gravity = true;
 }
 
 void createStars3Scene(Scene *res) {
