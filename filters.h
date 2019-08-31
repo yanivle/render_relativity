@@ -21,12 +21,18 @@ namespace filters {
     ComplexArray2D res(width, height);
     for (int y = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x) {
-        res(x, y) = 1 / (1. + x * x + y * y);
+        int dx = std::abs(x - width / 2);
+        int dy = std::abs(y - height / 2);
+        res(x, y) = 1 / (1. + dx * dx + dy * dy);
+        if (dx > 16 || dy > 16) {
+          res(x, y) = 0;
+        }
       }
     }
+    res = res.rotate(width / 2, height / 2);
     res.inormalize();
+    res(0, 0) += 1;
     res /= 2;
-    res(0, 0) += 0.5;
 
     fft::fft2d(res);
     return res;
