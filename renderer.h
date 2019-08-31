@@ -14,7 +14,7 @@ public:
   const mat4& view_world_matrix() const { return view_world_matrix_; }
   mat4& modifiable_view_world_matrix() { return view_world_matrix_; }
 
-  Color shoot(Ray ray, const Scene& scene, int remaining_depth) {
+  Color shoot(Ray ray, const Scene& scene, int remaining_depth) const {
     SDFResult r;
     ray.origin = view_world_matrix_ * ray.origin;
     ray.direction = view_world_matrix_.rotate(ray.direction);
@@ -39,7 +39,7 @@ public:
   }
 
 private:
-  bool march(Ray& ray, const Scene& scene, SDFResult* res) {
+  bool march(Ray& ray, const Scene& scene, SDFResult* res) const {
     for (int i = 0; i < scene.rendering_params().max_marching_steps; ++i) {
       *res = scene.root()->sdf(ray.origin);
       if (res->dist < scene.rendering_params().epsilon) {
@@ -56,7 +56,7 @@ private:
     return false;
   }
 
-  float shadow(Ray ray_to_light, const Scene& scene, float dist_to_light) {
+  float shadow(Ray ray_to_light, const Scene& scene, float dist_to_light) const {
     float res = 1.0;
     const float k = 16;
     for (float t = scene.rendering_params().epsilon * 100; t < dist_to_light;) {
@@ -68,7 +68,7 @@ private:
     return res;
   }
 
-  Color diffuse(const vec3& v, const Material& material, const Scene& scene, float diffuse_factor) {
+  Color diffuse(const vec3& v, const Material& material, const Scene& scene, float diffuse_factor) const {
     vec3 normal = scene.root()->normal(v);
     Color color;
     float total_factor = 0;
@@ -91,7 +91,7 @@ private:
     return material.color(v) * total_factor;
   }
 
-  Color reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_depth) {
+  Color reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_depth) const {
     if (remaining_depth == 0) return colors::BLACK;
     vec3 normal = scene.root()->normal(ray.origin);
     ray.direction.ireflect(normal);
