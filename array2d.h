@@ -111,21 +111,21 @@ public:
   }
 
   // Row/Column access.
-  ArrayView<value_type> row(int i) {
+  ArrayView<value_type> row(int i) const {
     return ArrayView<value_type>(data_ + index(0, i), width_, 1);
   }
 
-  ArrayView<value_type> column(int i) {
+  ArrayView<value_type> column(int i) const {
     return ArrayView<value_type>(data_ + index(i, 0), height_, width_);
   }
 
-  ArrayView<value_type> flatten() {
+  ArrayView<value_type> flatten() const {
     return ArrayView<value_type>(data_, size_, 1);
   }
 
-  unsigned int width() const { return width_; }
-  unsigned int height() const { return height_; }
-  unsigned int size() const { return size_; }
+  size_t width() const { return width_; }
+  size_t height() const { return height_; }
+  size_t size() const { return size_; }
 
   // Debugging.
   void print(int cell_width=4) const {
@@ -135,7 +135,53 @@ public:
         }
         std::cout << std::endl;
     }
-    std::cout << std::endl;
+  }
+
+  // Scalar operations.
+  void operator *= (value_type a) {
+    for (int i = 0; i < size(); ++i) {
+      data_[i] *= a;
+    }
+  }
+
+  void operator *= (const Array2D<value_type>& other) {
+    for (int i = 0; i < size(); ++i) {
+      data_[i] *= other.data_[i];
+    }
+  }
+
+  void operator /= (value_type a) {
+    for (int i = 0; i < size(); ++i) {
+      data_[i] /= a;
+    }
+  }
+
+  value_type sum() const {
+    value_type sum = 0;
+    for (int i = 0; i < size(); ++i) {
+      sum += data_[i];
+    }
+    return sum;
+  }
+
+  value_type min() const {
+    const auto flat = flatten();
+    return *std::min_element(flat.cbegin(), flat.cend());
+  }
+
+  void operator += (const Array2D<value_type>& other) {
+    for (int i = 0; i < size(); ++i) {
+      data_[i] += other.data_[i];
+    }
+  }
+
+  void inormalize() {
+    (*this) /= sum();
+  }
+
+  void iaverage(const Array2D<value_type>& other) {
+    (*this) += other;
+    (*this) /= 2;
   }
 
 protected:
