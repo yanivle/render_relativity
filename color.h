@@ -9,6 +9,14 @@ struct Color {
 
   Color() {}
 
+  Color(int packed) {
+    b = packed & 255;
+    packed >>= 8;
+    g = packed & 255;
+    packed >>= 8;
+    r = packed & 255; 
+  }
+
   RGB toRGB() const {
     Color clamped = clamp(r, g, b);
     return RGB(clamped.r, clamped.g, clamped.b);
