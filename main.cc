@@ -6,9 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include "palette.h"
-#include "matrix.h"
 #include "image.h"
-#include "doublematrix.h"
 #include "vec3.h"
 #include "mat4.h"
 #include "sdf.h"
@@ -23,9 +21,10 @@
 #include "scenes/stars1.h"
 #include "scenes/cube_scene.h"
 #include "object_registry.h"
+#include "fft.h"
+#include "filters.h"
 
-int main(void)
-{
+int main(void) {
   Renderer renderer;
   Scene scene;
   // createScene1(&scene);
@@ -46,6 +45,9 @@ int main(void)
   std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
   std::cout << "Total lights: " << scene.lights().size() << std::endl;
   std::cout << "Total masses: " << scene.masses().size() << std::endl;
+
+  std::cout << "Resolution: " << scene.rendering_params().width << 'x'
+                              << scene.rendering_params().height << std::endl;
 
   Image img(scene.rendering_params().width, scene.rendering_params().height);
 
@@ -77,6 +79,10 @@ int main(void)
   progress.done();
 
   img.save("output.ppm");
+
+  std::cout << "Applying post processing effects..." << std::endl;
+  filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+  img.save("output_bloomed.ppm");
 
   return EXIT_SUCCESS;
 }
