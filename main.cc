@@ -25,6 +25,7 @@
 #include "filters.h"
 #include <thread>
 #include <unistd.h>
+#include "world_constants.h"
 
 std::atomic<int> global_y = 0;
 Renderer renderer;
@@ -36,6 +37,7 @@ void progress_thread() {
     progress.update(global_y);
     usleep(1000 * 100);
   }
+  progress.update(global_y);
   progress.done();
 }
 
@@ -61,6 +63,10 @@ void render_thread(Image* image) {
   }
 }
 
+std::string counter_filename(std::string basename, int count, std::string suffix) {
+  return basename + std::to_string(count) + suffix;
+}
+
 int main(void) {
   // createScene1(&scene);
   createStars2Scene(&scene);
@@ -79,27 +85,31 @@ int main(void) {
 
   Image img(scene.rendering_params().width, scene.rendering_params().height);
 
-  std::vector<std::thread> threads;
-  const int num_threads = std::thread::hardware_concurrency();
-  std::cout << "Starting " << num_threads << " threads" << std::endl;
-  for (int i = 0; i < num_threads; ++i) {
-    threads.push_back(std::thread(render_thread, &img));
-    // std::cout << "Starting thread " << i << std::endl;
+  for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
+    global_y = 0;
+    std::cout << "Rendering frame " << frame << std::endl;
+    std::vector<std::thread> threads;
+    // const int num_threads = std::thread::hardware_concurrency();
+    const int num_threads = 1;
+    std::cout << "Starting " << num_threads << " threads" << std::endl;
+    for (int i = 0; i < num_threads; ++i) {
+      threads.push_back(std::thread(render_thread, &img));
+    }
+    progress_thread();
+    for (std::thread& thread : threads) {
+      thread.join();
+    }
+
+    img.serialize(counter_filename("output/render", frame, ".img"));
+    // img.deserialize("render.img");
+
+    img.save(counter_filename("output/output", frame, ".ppm").c_str());
+
+    // std::cout << "Applying post processing effects..." << std::endl;
+    // filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+    // img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
+    world_constants::time += scene.rendering_params().animation_params.time_delta;
   }
-  progress_thread();
-  for (std::thread& thread : threads) {
-    // std::cout << "Joining thread " << thread.get_id() << std::endl;
-    thread.join();
-  }
-
-  img.serialize("render.img");
-  // img.deserialize("render.img");
-
-  img.save("output.ppm");
-
-  std::cout << "Applying post processing effects..." << std::endl;
-  filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
-  img.save("output_bloomed.ppm");
 
   return EXIT_SUCCESS;
 }

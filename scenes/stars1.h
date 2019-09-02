@@ -145,7 +145,7 @@ void createStars2Scene(Scene *res) {
   AddBigStar({Color(0xD14009), Color(0xFC9601), Color(0xFFCC33), Color(0xFFE484), Color(0xFFFFFF)}, 1, 5.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
 
   // // Earth.
-  AddBigStar({Color(0xd8c596), Color(0x9fc164), Color(0xe9eff9), Color(0x6b93d6), Color(0x4f4cb0)}, 0.8, 0.1, 0.5, 0.1, 0.3, 8, vec3(20, -15, 5), 0, res);
+  AddBigStar({Color(0xd8c596), Color(0x9fc164), Color(0xe9eff9), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6)}, 0.8, 0.1, 0.5, 0.8, 0.3, 8, vec3(20, -15, 5), 0, res);
 
   // // Jupiter.
   AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
@@ -172,7 +172,9 @@ void createStars2Scene(Scene *res) {
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
   }
-  
+
+  res->addLight(new PointLight(vec3(100, 100, 2)));
+
   res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);
   res->modifiable_rendering_params().camera_settings.target = vec3(0, 0, 0);
   res->modifiable_rendering_params().do_shading = false;
@@ -181,7 +183,8 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  res->modifiable_rendering_params().use_gravity = true;
+  // res->modifiable_rendering_params().use_gravity = true;
+  res->modifiable_rendering_params().animation_params.frames = 10;
 }
 
 void createStars3Scene(Scene *res) {
