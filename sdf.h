@@ -176,9 +176,9 @@ public:
       if (r.dist < res.dist) {
         res = r;
         if (res.dist < bound) {
-          SDF* t = children[0];
-          children[0] = children[i];
-          children[i] = t;
+          // SDF* t = children[0];
+          // children[0] = children[i];
+          // children[i] = t;
           break;
         }
       }
@@ -187,7 +187,8 @@ public:
   }
 
 private:
-  mutable std::vector<SDF *>children;
+  // mutable std::vector<SDF *>children;
+  std::vector<SDF *>children;
 };
 
 class Union : public SDF {
@@ -206,13 +207,15 @@ public:
       return r1;
     }
     // Swap them, as maybe nearby rays will trigger r2 first.
-    SDF* t = obj1; obj1 = obj2; obj2 = t;
+    // SDF* t = obj1; obj1 = obj2; obj2 = t;
     return r2;
   }
 
 private:
-  mutable SDF *obj1;
-  mutable SDF *obj2;
+  // mutable SDF *obj1;
+  // mutable SDF *obj2;
+  SDF *obj1;
+  SDF *obj2;
 };
 
 class Intersection : public SDF {
@@ -231,13 +234,15 @@ public:
       return r1;
     }
     // Swap them, as maybe nearby rays will trigger r2 first.
-    SDF* t = obj1; obj1 = obj2; obj2 = t;
+    // SDF* t = obj1; obj1 = obj2; obj2 = t;
     return r2;
   }
 
 private:
-  mutable SDF *obj1;
-  mutable SDF *obj2;
+  // mutable SDF *obj1;
+  // mutable SDF *obj2;
+  SDF *obj1;
+  SDF *obj2;
 };
 
 class Smooth : public SDF {
