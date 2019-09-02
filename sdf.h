@@ -111,7 +111,6 @@ public:
     return SDFResult(dist, material);
   }
 
-private:
   vec3 center;
   float radius;
   Material material;
