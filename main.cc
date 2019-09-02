@@ -86,6 +86,8 @@ int main(void) {
   Image img(scene.rendering_params().width, scene.rendering_params().height);
 
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
+    float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
+    *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
     global_y = 0;
     std::cout << "Rendering frame " << frame << std::endl;
     std::vector<std::thread> threads;
@@ -102,11 +104,11 @@ int main(void) {
     img.serialize(counter_filename("output/render", frame, ".img"));
     // img.deserialize("render.img");
 
-    img.save(counter_filename("output/output", frame, ".ppm").c_str());
+    // img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
-    // std::cout << "Applying post processing effects..." << std::endl;
-    // filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
-    // img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
+    std::cout << "Applying post processing effects..." << std::endl;
+    filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+    img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;
   }
