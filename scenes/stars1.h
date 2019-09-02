@@ -2,6 +2,7 @@
 #define STARS1_H
 
 #include "../scene.h"
+#include "../world_constants.h"
 
 void AddStar(SDF** container, Scene* scene) {
   Material material(colors::WHITE, rand_range(0.5, 1), 0, 0, 0);
@@ -42,7 +43,7 @@ void AddBigStar(std::initializer_list<Color> colors, float perlin_scale,
                 float ambient, float diffuse,
                 float deformation_scale, float deformation_magnitude,
                 float radius, const vec3& center, float mass,
-                Scene* scene) {
+                Scene* scene, char const* name_mass = 0) {
   PerlinNoiseColorizer *colorizer = new PerlinNoiseColorizer(colors, perlin_scale);
   Material material(colorizer, ambient, diffuse, 0, 0);
   SDF* star = new Sphere(center, radius, material);
@@ -53,8 +54,12 @@ void AddBigStar(std::initializer_list<Color> colors, float perlin_scale,
     star = new Bound(star, bound_obj, 0.1);
   }
   star = scene->addObject(star);
-  if (mass > 0) {
-    scene->addMass((new PointMass(center, mass)));
+  if (mass > 0 || name_mass != 0) {
+    PointMass* pm = new PointMass(center, mass);
+    if (name_mass != 0) {
+      world_constants::values[name_mass] = &(pm->mass);
+    }
+    scene->addMass(pm);
   }
 }
 
@@ -62,11 +67,11 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
                 float ambient, float diffuse,
                 float deformation_scale, float deformation_magnitude,
                 float radius, const vec3& center, float mass,
-                Scene* scene) {
+                Scene* scene, char const* mass_name = 0) {
   AddBigStar({color1, color2}, perlin_scale,
              ambient, diffuse,
              deformation_scale, deformation_magnitude,
-             radius, center, mass, scene);
+             radius, center, mass, scene, mass_name);
 }
 
 void createStars1Scene(Scene *res) {
@@ -157,7 +162,7 @@ void createStars2Scene(Scene *res) {
   // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20, 0, 30), 0, res);
 
   // Black hole.
-  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 5, res);
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 0, res, "blackhole_mass");
 
   SDF* bound_obj = new Sphere(vec3(), 1000, Material());
   bound_obj = new Negate(bound_obj);
@@ -183,7 +188,7 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  // res->modifiable_rendering_params().use_gravity = true;
+  res->modifiable_rendering_params().use_gravity = true;
   res->modifiable_rendering_params().animation_params.frames = 10;
 }
 
