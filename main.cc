@@ -89,8 +89,7 @@ int main(void) {
     global_y = 0;
     std::cout << "Rendering frame " << frame << std::endl;
     std::vector<std::thread> threads;
-    // const int num_threads = std::thread::hardware_concurrency();
-    const int num_threads = 1;
+    const int num_threads = std::thread::hardware_concurrency();
     std::cout << "Starting " << num_threads << " threads" << std::endl;
     for (int i = 0; i < num_threads; ++i) {
       threads.push_back(std::thread(render_thread, &img));
@@ -108,6 +107,7 @@ int main(void) {
     // std::cout << "Applying post processing effects..." << std::endl;
     // filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
     // img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
+
     world_constants::time += scene.rendering_params().animation_params.time_delta;
   }
 
