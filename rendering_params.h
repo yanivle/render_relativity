@@ -19,7 +19,7 @@ struct RenderingParams {
   float gravity_slowdown_factor = 10;
   struct AnimationParams {
     int frames = 1;
-    float time_delta = 0.0001;
+    float time_delta = 0.001;
   } animation_params;
   struct CameraSettings {
     vec3 eye_pos = vec3(0, 0, 0);
