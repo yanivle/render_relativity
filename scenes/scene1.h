@@ -6,10 +6,10 @@ void createScene1(Scene* res) {
   SDF* s3 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::GREEN, 0.1, 1.0, 0.5, 0));
   SDF* s4 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::BLUE, 0.1, 1.0, 0.5, 0));
 
-  res->addMass(PointMass(vec3(-1.7, 2, 16), 0.001));
-  res->addMass(PointMass(vec3(-1.7, 0, 16), 0.001));
-  res->addMass(PointMass(vec3(1.7, 2, 16), 0.001));
-  res->addMass(PointMass(vec3(1.7, 0, 16), 0.001));
+  res->addMass(new PointMass(vec3(-1.7, 2, 16), 0.001));
+  res->addMass(new PointMass(vec3(-1.7, 0, 16), 0.001));
+  res->addMass(new PointMass(vec3(1.7, 2, 16), 0.001));
+  res->addMass(new PointMass(vec3(1.7, 0, 16), 0.001));
 
   s1 = new Translate(s1, vec3(-1.7, 2, 16));
   s2 = new Translate(s2, vec3(-1.7, 0, 16));

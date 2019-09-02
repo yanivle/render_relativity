@@ -54,7 +54,7 @@ void AddBigStar(std::initializer_list<Color> colors, float perlin_scale,
   }
   star = scene->addObject(star);
   if (mass > 0) {
-    scene->addMass((PointMass(center, mass)));
+    scene->addMass((new PointMass(center, mass)));
   }
 }
 

@@ -57,7 +57,7 @@ void addChoppedSphere(Scene* scene) {
 
   // Move to a better position.
   sphere = scene->addObject(new Translate(sphere, vec3(1.5, -1.2, 8)));
-  scene->addMass(PointMass(vec3(1.5, -1.2, 8), 0.01));
+  scene->addMass(new PointMass(vec3(1.5, -1.2, 8), 0.01));
 }
 
 void addCheckeredFloor(Scene* scene) {

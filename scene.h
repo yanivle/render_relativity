@@ -31,6 +31,9 @@ public:
     for (int i = 0; i < lights_.size(); ++i) {
       delete lights_[i];
     }
+    for (int i = 0; i < masses_.size(); ++i) {
+      delete masses_[i];
+    }
   }
 
   const SDF* root() const {
@@ -43,7 +46,7 @@ public:
     return sdf;
   }
 
-  void addMass(const PointMass& mass) {
+  void addMass(PointMass* mass) {
     masses_.push_back(mass);
   }
 
@@ -59,7 +62,7 @@ public:
     return lights_;
   }
 
-  const std::vector<PointMass>& masses() const {
+  const std::vector<PointMass*>& masses() const {
     return masses_;
   }
 
@@ -68,7 +71,7 @@ private:
   MultiUnion* root_sdf = 0;
   std::vector<SDF*> objects_;
   std::vector<Light*> lights_;
-  std::vector<PointMass> masses_;
+  std::vector<PointMass*> masses_;
 };
 
 #endif
