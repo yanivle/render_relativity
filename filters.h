@@ -65,13 +65,13 @@ namespace filters {
 
   void Convolve(Image& image, const ComplexArray2D& filter) {
     ComplexArray2D transformed_filter = filter;
-    fft::fft2d(transformed_filter);
+    fft::fft2d_mt(transformed_filter);
     for (int channel_id = Image::RED; channel_id <= Image::BLUE; ++channel_id) {
       Image::Channel channel = Image::Channel(channel_id);
       ComplexArray2D c = image.getChannel(channel);
-      fft::fft2d(c);
+      fft::fft2d_mt(c);
       c *= transformed_filter;
-      fft::ifft2d(c);
+      fft::ifft2d_mt(c);
       Array2D<float> arr = c.transform<float>([](fft::Complex c) {return c.real();});
       image.setChannel(channel, arr);
     }
