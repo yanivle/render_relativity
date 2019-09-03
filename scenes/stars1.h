@@ -174,7 +174,7 @@ void createStars2Scene(Scene *res) {
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
   // const int NUM_BACKGROUND_STARS = 2000;
-  const int NUM_BACKGROUND_STARS = 200;
+  const int NUM_BACKGROUND_STARS = 500;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
     AddStarMultiUnion(stars_container, res);
   }
@@ -194,7 +194,7 @@ void createStars2Scene(Scene *res) {
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
   res->modifiable_rendering_params().use_gravity = true;
-  res->modifiable_rendering_params().animation_params.frames = 10;
+  res->modifiable_rendering_params().animation_params.frames = 20;
 }
 
 void createStars3Scene(Scene *res) {
