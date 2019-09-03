@@ -52,7 +52,9 @@ void render_thread(Image* image) {
           float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
           float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
           float z_dir = scene.rendering_params().screen_z;
-          Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
+          vec3 eye_pos = vec3(world_constants::time, world_constants::time, world_constants::time) * 200;
+          vec3 look_at = (vec3(x_dir, y_dir, z_dir)).normalize();
+          Ray ray(eye_pos, look_at);
 
           colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
@@ -88,11 +90,12 @@ int main(void) {
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
     float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
     *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
+    *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
     global_y = 0;
-    std::cout << "Rendering frame " << frame << std::endl;
-    std::vector<std::thread> threads;
     const int num_threads = std::thread::hardware_concurrency();
-    std::cout << "Starting " << num_threads << " threads" << std::endl;
+    std::cout << "Rendering frame " << frame << " with " << num_threads
+              << " threads..." << std::endl;
+    std::vector<std::thread> threads;
     for (int i = 0; i < num_threads; ++i) {
       threads.push_back(std::thread(render_thread, &img));
     }
@@ -101,7 +104,7 @@ int main(void) {
       thread.join();
     }
 
-    img.serialize(counter_filename("output/render", frame, ".img"));
+    // img.serialize(counter_filename("output/render", frame, ".img"));
     // img.deserialize("render.img");
 
     // img.save(counter_filename("output/output", frame, ".ppm").c_str());
