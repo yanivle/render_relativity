@@ -52,9 +52,7 @@ void render_thread(Image* image) {
           float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
           float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
           float z_dir = scene.rendering_params().screen_z;
-          vec3 eye_pos = vec3(world_constants::time, world_constants::time, world_constants::time) * 200;
-          vec3 look_at = (vec3(x_dir, y_dir, z_dir)).normalize();
-          Ray ray(eye_pos, look_at);
+          Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
 
           colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
@@ -74,9 +72,9 @@ int main(void) {
   createStars2Scene(&scene);
   // createCubeScene(&scene);
 
-  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
-                                            scene.rendering_params().camera_settings.target,
-                                            scene.rendering_params().camera_settings.up);
+  // renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
+  //                                           scene.rendering_params().camera_settings.target,
+  //                                           scene.rendering_params().camera_settings.up);
 
   std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
   std::cout << "Total lights: " << scene.lights().size() << std::endl;
@@ -89,12 +87,18 @@ int main(void) {
 
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
     float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
-    *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
-    *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
+    vec3 eye_movement = vec3(100 * sin(M_PI / 13 * animation_fraction), 0, -100 * cos(M_PI / 13 * animation_fraction) + 100);
+    renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
+                                              scene.rendering_params().camera_settings.target,
+                                              scene.rendering_params().camera_settings.up);
+
+    // *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
+    // *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
     global_y = 0;
     const int num_threads = std::thread::hardware_concurrency();
-    std::cout << "Rendering frame " << frame << " with " << num_threads
-              << " threads..." << std::endl;
+    std::cout << "Rendering frame " << frame << "/"
+              << scene.rendering_params().animation_params.frames << " with "
+              << num_threads << " threads..." << std::endl;
     std::vector<std::thread> threads;
     for (int i = 0; i < num_threads; ++i) {
       threads.push_back(std::thread(render_thread, &img));
