@@ -3,7 +3,10 @@
 
 #include "../array2d.h"
 
-int main(void) {
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+TEST_CASE( "Array2D Works", "[Array2D]" ) {
     Array2D<int> arr(10, 10);
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
@@ -11,20 +14,18 @@ int main(void) {
         }
     }
 
-    arr.print();
-
     const auto c = arr.column(2);
-    std::cout << "Col(2): " << c.str() << std::endl;
+    REQUIRE(c.str() == "ArrayView(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)");
 
     const auto r = arr.row(2);
-    std::cout << "Row(2): " << r.str() << std::endl;
+    REQUIRE(r.str() == "ArrayView(0, 3, 6, 9, 12, 15, 18, 21, 24, 27)");
 
     const auto c2 = c[std::slice(0, 5, 2)];
-    std::cout << "Col(2)[slice(0, 5, 2)]: " << c2.str() << std::endl;
+    REQUIRE(c2.str() == "ArrayView(2, 6, 10, 14, 18)");
 
     const auto r2 = r[std::slice(1, 5, 2)];
-    std::cout << "Row(2)[slice(1, 5, 2)]: " << r2.str() << std::endl;
+    REQUIRE(r2.str() == "ArrayView(3, 9, 15, 21, 27)");
 
     const auto c3 = c2[std::slice(0, 3, 2)];
-    std::cout << "Col(2)[slice(0, 5, 2)][slice(0, 3, 2)]: " << c3.str() << std::endl;
+    REQUIRE(c3.str() == "ArrayView(2, 10, 18)");
 }
