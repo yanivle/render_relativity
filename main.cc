@@ -26,6 +26,7 @@
 #include <thread>
 #include <unistd.h>
 #include "world_constants.h"
+#include <atomic>
 
 std::atomic<int> global_y = 0;
 Renderer renderer;
