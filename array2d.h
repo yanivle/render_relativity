@@ -64,6 +64,20 @@ public:
     delete[] data_;
   }
 
+  // Comparison.
+  bool operator==(const Array2D& other) const {
+    if (width_ != other.width_ || height_ != other.height_) {
+      return false;
+    }
+    for (int i = 0; i < size_; ++i) {
+      if (data_[i] != other.data_[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   // Indexed access.
   value_type& operator()(int x, int y) {
     return data_[index(x, y)];
@@ -138,10 +152,10 @@ public:
   }
 
   // Debugging.
-  void print(int cell_width=4) const {
+  void print(int cell_width=4, int precision=2) const {
     for (int y = 0; y < height_; ++y) {
         for (int x = 0; x < width_; ++x) {
-            std::cout << std::fixed << std::setprecision(2) << std::setw(cell_width) << (*this)(x, y) << " ";
+            std::cout << std::fixed << std::setprecision(precision) << std::setw(cell_width) << (*this)(x, y) << " ";
         }
         std::cout << std::endl;
     }
