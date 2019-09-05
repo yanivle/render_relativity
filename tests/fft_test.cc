@@ -8,52 +8,61 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
+typedef std::complex<float> Complex;
+
+class Array2DApprox : public Catch::MatcherBase<Array2D<Complex>> {
+    Array2D<Complex> baseline_;
+public:
+    Array2DApprox(const Array2D<Complex>& baseline) : baseline_(baseline) {}
+
+    bool match(Array2D<Complex> const& arr) const override {
+        if (arr.width() != baseline_.width() || arr.height() != baseline_.height()) {
+            return false;
+        }
+        for (int i = 0; i < arr.size(); ++i) {
+            if (arr(i).real() != Approx(baseline_(i).real()).margin(0.01)) {
+                return false;
+            }
+            if (arr(i).imag() != Approx(baseline_(i).imag()).margin(0.01)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    virtual std::string describe() const override {
+        std::ostringstream ss;
+        ss << "is approximately equal to " << baseline_.str();
+        return ss.str();
+    }
+};
+
+inline Array2DApprox IsApproximatelyEqualTo(const Array2D<Complex>& baseline) {
+    return Array2DApprox(baseline);
+}
+
 TEST_CASE( "FFT for ints works", "[FFT]" ) {
     const int width = 4;
     const int height = 4;
-    Array2D<std::complex<float>> arr(width, height);
+    Array2D<Complex> arr(width, height);
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {
             arr(x, y) = x * y + x;
         }
     }
-    Array2D<std::complex<float>> original = arr;
+    Array2D<Complex> original = arr;
 
     fft::fft2d(arr);
-    arr.print(20, 100);
-    CHECK(arr(0, 0).real() == Approx(60));
-    CHECK(arr(0, 0).imag() == Approx(0));
-    CHECK(arr(0, 1).real() == Approx(-12));
-    CHECK(arr(0, 1).imag() == Approx(12));
-    CHECK(arr(0, 2).real() == Approx(-12));
-    CHECK(arr(0, 2).imag() == Approx(0));
-    CHECK(arr(0, 3).real() == Approx(-12));
-    CHECK(arr(0, 3).imag() == Approx(-12));
-    CHECK(arr(1, 0).real() == Approx(-20));
-    CHECK(arr(1, 0).imag() == Approx(20));
-    CHECK(arr(1, 1).real() == Approx(-0.00000047683715820312));
-    CHECK(arr(1, 1).imag() == Approx(-8));
-    CHECK(arr(1, 2).real() == Approx(4));
-    CHECK(arr(1, 2).imag() == Approx(-4));
-    CHECK(arr(1, 3).real() == Approx(8));
-    CHECK(arr(1, 3).imag() == Approx(0.00000000000000000000));
-    CHECK(arr(2, 0).real() == Approx(-20));
-    CHECK(arr(2, 0).imag() == Approx(0));
-    CHECK(arr(2, 1).real() == Approx(4));
-    CHECK(arr(2, 1).imag() == Approx(-4));
-    CHECK(arr(2, 2).real() == Approx(4));
-    CHECK(arr(2, 2).imag() == Approx(0));
-    CHECK(arr(2, 3).real() == Approx(4));
-    CHECK(arr(2, 3).imag() == Approx(4));
-    CHECK(arr(3, 0).real() == Approx(-20));
-    CHECK(arr(3, 0).imag() == Approx(-20));
-    CHECK(arr(3, 1).real() == Approx(8));
-    CHECK(arr(3, 1).imag() == Approx(0));
-    CHECK(arr(3, 2).real() == Approx(4));
-    CHECK(arr(3, 2).imag() == Approx(4));
-    CHECK(arr(3, 3).real() == Approx(0.00000071525573730469));
-    CHECK(arr(3, 3).imag() == Approx(8));
+    Array2D<Complex> golden_fft_result{
+        {Complex(60, 0), Complex(-20, 20), Complex(-20, 0), Complex(-20, -20)},
+        {Complex(-12, 12), Complex(-0.00000047683715820312, -8), Complex(4, -4), Complex(8, 0)},
+        {Complex(-12, 0), Complex(4, -4), Complex(4, 0), Complex(4, 4)},
+        {Complex(-12, -12), Complex(8, -0.00000047683715820312), Complex(4, 4), Complex(0.00000071525573730469, 8)}
+    };
+
+    CHECK_THAT(arr, IsApproximatelyEqualTo(golden_fft_result));
 
     fft::ifft2d(arr);
-    CHECK(arr == original);
+
+    CHECK_THAT(arr, IsApproximatelyEqualTo(original));
 }
