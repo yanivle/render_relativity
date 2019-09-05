@@ -4,6 +4,7 @@
 #include <complex>
 #include <valarray>
 #include <thread>
+#include <vector>
 
 namespace fft {
 
@@ -65,7 +66,7 @@ void fft2d_thread(Array2D<Complex>* arr, int block_min, int block_max) {
 
 }
 
-void fft2d_mt(Array2D<Complex>& arr) {
+inline void fft2d_mt(Array2D<Complex>& arr) {
     const int num_threads = std::thread::hardware_concurrency();
     int row_block_size = arr.height() / num_threads;
     std::vector<std::thread> threads;
@@ -96,7 +97,7 @@ void fft2d_mt(Array2D<Complex>& arr) {
     }
 }
 
-void ifft2d_mt(Array2D<Complex>& arr) {
+inline void ifft2d_mt(Array2D<Complex>& arr) {
     const int num_threads = std::thread::hardware_concurrency();
     int row_block_size = arr.height() / num_threads;
     std::vector<std::thread> threads;
@@ -127,7 +128,7 @@ void ifft2d_mt(Array2D<Complex>& arr) {
     }
 }
 
-void fft2d(Array2D<Complex>& arr) {
+inline void fft2d(Array2D<Complex>& arr) {
     for (int y = 0; y < arr.height(); ++y) {
         ComplexArray row = arr.row(y).template copy<ComplexArray>();
         fft(row);
@@ -140,7 +141,7 @@ void fft2d(Array2D<Complex>& arr) {
     }
 }
 
-void ifft2d(Array2D<Complex>& arr) {
+inline void ifft2d(Array2D<Complex>& arr) {
     for (int x = 0; x < arr.width(); ++x) {
         ComplexArray col = arr.column(x).template copy<ComplexArray>();
         ifft(col);
