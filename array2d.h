@@ -38,6 +38,23 @@ public:
     return res;
   }
 
+  Array2D(const std::initializer_list<std::initializer_list<value_type>>& lst) {
+    height_ = lst.size();
+    width_ = lst.begin()->size();
+    size_ = width_ * height_;
+    data_ = new value_type[size_];
+    int i = 0;
+    for (const auto& l : lst) {
+      if (l.size() != width_) {
+        std::cerr << "ERROR: Array2D: Initializing Array2D from inconsistent initializer_list." << std::endl;
+      }
+      for (const auto& v : l) {
+        data_[i] = v;
+        i++;
+      }
+    }
+  }
+
   Array2D(const Array2D<value_type>& other) :
     width_(other.width()), height_(other.height()), size_(other.size()) {
     data_ = new value_type[size_];
@@ -161,6 +178,20 @@ public:
     }
   }
 
+  std::string str() const {
+    std::ostringstream ss;
+    ss << "Array2D(" << std::endl;
+    for (int y = 0; y < height(); ++y) {
+      ss << "[";
+      for (int x = 0; x < width(); ++x) {
+        ss << (*this)(x, y) << ", ";
+      }
+      ss << "]" << std::endl;
+    }
+    ss << ")";
+    return ss.str();
+  }
+
   // Serialization.
   void serialize(const std::string& filename) const {
     std::ofstream file(filename, std::ofstream::binary);
@@ -245,5 +276,10 @@ protected:
   size_t size_ = 0;
   value_type *data_ = 0;
 };
+
+template <class value_type>
+std::ostream &operator<<(std::ostream &os, Array2D<value_type> const &arr) {
+    return os << arr.str();
+}
 
 #endif
