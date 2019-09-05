@@ -17,6 +17,14 @@ struct Color {
     r = packed & 255; 
   }
 
+  bool operator==(const Color& other) const {
+    return r == other.r && g == other.g && b == other.b;
+  }
+
+  bool operator!=(const Color& other) const {
+    return r != other.r || g != other.g || b != other.b;
+  }
+
   RGB toRGB() const {
     Color clamped = clamp(r, g, b);
     return RGB(clamped.r, clamped.g, clamped.b);
@@ -89,6 +97,10 @@ struct Color {
 
 private:
 };
+
+std::ostream &operator<<(std::ostream &os, const Color &color) {
+    return os << color.str();
+}
 
 namespace colors {
   const Color BLACK(0, 0, 0);
