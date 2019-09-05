@@ -180,13 +180,16 @@ public:
 
   std::string str() const {
     std::ostringstream ss;
+    ss << std::fixed << std::setprecision(2);
     ss << "Array2D(" << std::endl;
     for (int y = 0; y < height(); ++y) {
-      ss << "[";
       for (int x = 0; x < width(); ++x) {
-        ss << (*this)(x, y) << ", ";
+        ss << (*this)(x, y);
+        if (x < width() - 1) {
+          ss << ", ";
+        }
       }
-      ss << "]" << std::endl;
+      ss << std::endl;
     }
     ss << ")";
     return ss.str();
