@@ -6,10 +6,9 @@
 
 typedef Array2D<fft::Complex> ComplexArray2D;
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-TEST_CASE( "Array2D Scalar Operations", "[Array2D]" ) {
+TEST_CASE("Array2D Scalar Operations", "[Array2D]") {
     ComplexArray2D arr(10, 10);
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {

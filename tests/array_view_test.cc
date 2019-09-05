@@ -4,10 +4,9 @@
 
 #include "../array_view.h"
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-TEST_CASE( "ArrayViews are working", "[ArrayView]" ) {
+TEST_CASE("ArrayViews are working", "[ArrayView]") {
     std::vector<int> vec;
     for (int i = 0; i < 10; ++i) {
         vec.push_back(i);
@@ -23,7 +22,6 @@ TEST_CASE( "ArrayViews are working", "[ArrayView]" ) {
     REQUIRE(view3.str() == "ArrayView(0, 3, 6)");
 
     std::vector<int> copy = view3.copy<std::vector<int>>();
-    std::cout << "view[slice(0, 3, 3)].copy(): " << std::endl;
     REQUIRE(copy == std::vector<int>{0, 3, 6});
 
     view3 = std::vector<int>{77, 88, 99};

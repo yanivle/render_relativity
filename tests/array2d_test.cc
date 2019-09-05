@@ -3,10 +3,9 @@
 
 #include "../array2d.h"
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-TEST_CASE( "Array2D Works", "[Array2D]" ) {
+TEST_CASE("Array2D Works", "[Array2D]") {
     Array2D<int> arr(10, 10);
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
@@ -28,4 +27,19 @@ TEST_CASE( "Array2D Works", "[Array2D]" ) {
 
     const auto c3 = c2[std::slice(0, 3, 2)];
     REQUIRE(c3.str() == "ArrayView(2, 10, 18)");
+}
+
+TEST_CASE("Serialize/deserialize work", "[Array2D]") {
+    Array2D<int> arr(10, 10);
+    for (int x = 0; x < 10; ++x) {
+        for (int y = 0; y < 10; ++y) {
+            arr(x, y) = x * y + x;
+        }
+    }
+
+    arr.serialize("/tmp/delme");
+    Array2D<int> loaded(10, 10);
+    loaded.deserialize("/tmp/delme");
+
+    CHECK(arr == loaded);
 }
