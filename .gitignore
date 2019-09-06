@@ -2,6 +2,7 @@
 *.dSYM
 .DS_Store
 launch.json
+settings.json
 output/
 bin/
 obj/
