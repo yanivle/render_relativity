@@ -3,7 +3,6 @@
 #include <random>
 #include <algorithm>
 #include <numeric>
-#include "world_constants.h"
 
 // Initialize with the reference values for the permutation vector
 PerlinNoise::PerlinNoise() {
@@ -46,9 +45,6 @@ PerlinNoise::PerlinNoise(unsigned int seed) {
 }
 
 float PerlinNoise::noise(float x, float y, float z) const {
-	x += world_constants::time;
-	y += world_constants::time;
-	z += world_constants::time;
 	// Find the unit cube that contains the point
 	int X = (int) floor(x) & 255;
 	int Y = (int) floor(y) & 255;
