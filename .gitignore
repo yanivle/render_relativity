@@ -3,3 +3,5 @@
 .DS_Store
 launch.json
 output/
+bin/
+obj/
