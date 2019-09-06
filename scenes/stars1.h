@@ -173,8 +173,8 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  // const int NUM_BACKGROUND_STARS = 2000;
-  const int NUM_BACKGROUND_STARS = 500;
+  const int NUM_BACKGROUND_STARS = 2000;
+  // const int NUM_BACKGROUND_STARS = 500;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
     AddStarMultiUnion(stars_container, res);
   }
