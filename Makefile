@@ -101,3 +101,9 @@ install: $(BIN)
 clean:
 	$(RM) $(OBJ) $(DEP) $(BIN)
 	$(RMDIR) $(OBJDIR) $(BINDIR) 2> /dev/null; true
+
+movie: $(BIN)
+	rm -f output/*
+	$(BIN)
+	python ./animation-generator.py
+	open output/movie.mp4
