@@ -98,7 +98,7 @@ struct Color {
 private:
 };
 
-std::ostream &operator<<(std::ostream &os, const Color &color) {
+inline std::ostream &operator<<(std::ostream &os, const Color &color) {
     return os << color.str();
 }
 
