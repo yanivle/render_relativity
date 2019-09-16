@@ -88,7 +88,7 @@ int main(void) {
 
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
     float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
-    vec3 eye_movement = vec3(100 * sin(M_PI / 13 * animation_fraction), 0, -100 * cos(M_PI / 13 * animation_fraction) + 100);
+    vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
     renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
                                               scene.rendering_params().camera_settings.target,
                                               scene.rendering_params().camera_settings.up);
