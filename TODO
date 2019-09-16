@@ -10,3 +10,8 @@
 - simulate moving scenes (and consider lorentz transformations)
 - simulate scattering
 - consider optimizing the return value from sdf() (e.g. make it into an argument, but remember - can't make this into SDF* and dist, as some materials are created as part of the sdf e.g. in smoothing)
+- clean Makefiles
+- experiment with variants on perlin noise
+    - add octaves
+    - change easing function (e.g. x^3 glued to itself rotated)
+- Add option to render number of iterations per ray (instead of color)
