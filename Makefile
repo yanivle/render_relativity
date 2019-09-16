@@ -3,7 +3,6 @@ CC			= clang++
 LD			= clang++
 RM			= rm -rf
 RMDIR		= rmdir
-INSTALL		= install
 # DEBUG		= -ggdb -O0 -march=native -ftrapv
 
 TARGET		= render_relativity
@@ -93,10 +92,6 @@ $(BIN): $(OBJ)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cc
 	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) -c -MMD -MP -o $@ $<
 
-
-install: $(BIN)
-	$(INSTALL) -d $(PREFIX)/bin
-	$(INSTALL) $(BIN) $(PREFIX)/bin
 
 clean:
 	$(RM) $(OBJ) $(DEP) $(BIN)
