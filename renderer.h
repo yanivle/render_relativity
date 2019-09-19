@@ -18,7 +18,10 @@ public:
     SDFResult r;
     ray.origin = view_world_matrix_ * ray.origin;
     ray.direction = view_world_matrix_.rotate(ray.direction);
-    if(march(ray, scene, &r)) {
+    int num_steps;
+    bool hit = march(ray, scene, &r, &num_steps);
+    return Palette::Veridis().color(double(num_steps) / 100);
+    if(hit) {
       Color ambient_color;
       if (r.material.ambient > 0) {
         ambient_color = r.material.color(ray.origin) * r.material.ambient;
@@ -39,8 +42,8 @@ public:
   }
 
 private:
-  bool march(Ray& ray, const Scene& scene, SDFResult* res) const {
-    for (int i = 0; i < scene.rendering_params().max_marching_steps; ++i) {
+  bool march(Ray& ray, const Scene& scene, SDFResult* res, int* num_steps) const {
+    for (*num_steps = 0; *num_steps < scene.rendering_params().max_marching_steps; ++(*num_steps)) {
       *res = scene.root()->sdf(ray.origin);
       if (res->dist < scene.rendering_params().epsilon) {
         return true;

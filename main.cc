@@ -69,8 +69,8 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  // createScene1(&scene);
-  createStars2Scene(&scene);
+  createScene1(&scene);
+  // createStars2Scene(&scene);
   // createCubeScene(&scene);
 
   // renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
@@ -87,8 +87,9 @@ int main(void) {
   Image img(scene.rendering_params().width, scene.rendering_params().height);
 
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
-    float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
-    vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
+    // float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
+    // vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
+    vec3 eye_movement;
     renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
                                               scene.rendering_params().camera_settings.target,
                                               scene.rendering_params().camera_settings.up);
@@ -114,8 +115,8 @@ int main(void) {
 
     // img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
-    std::cout << "Applying post processing effects..." << std::endl;
-    filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+    // std::cout << "Applying post processing effects..." << std::endl;
+    // filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
     img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;
