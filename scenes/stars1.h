@@ -32,8 +32,7 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
     brightness *= 2;
   }
   Material material(color, brightness, 0, 0, 0);
-  vec3 center = vec3::random() * 500;
-  center = center.normalize() * 1200;
+  vec3 center = vec3::random() * 1200;
   float radius = rand_range(0.3, 0.8);
   SDF* star = new Sphere(center, radius, material);
   container->addChild(star);
