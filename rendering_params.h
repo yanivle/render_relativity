@@ -17,6 +17,9 @@ struct RenderingParams {
   bool light_decay = false;
   float screen_z = 5;
   float gravity_slowdown_factor = 10;
+
+  bool render_march_iterations = false;
+
   struct AnimationParams {
     int frames = 1;
     float time_delta = 0.001;

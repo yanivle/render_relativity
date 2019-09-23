@@ -20,7 +20,9 @@ public:
     ray.direction = view_world_matrix_.rotate(ray.direction);
     int num_steps;
     bool hit = march(ray, scene, &r, &num_steps);
-    return Palette::Veridis().color(double(num_steps) / 100);
+    if (scene.rendering_params().render_march_iterations) {
+      return Palette::Veridis().color(double(num_steps) / 100);
+    }
     if(hit) {
       Color ambient_color;
       if (r.material.ambient > 0) {
