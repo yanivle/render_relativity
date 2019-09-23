@@ -12,7 +12,7 @@ BINDIR		= bin
 
 # CFLAGS, LDFLAGS, CPPFLAGS, PREFIX can be overriden on CLI
 CFLAGS		:= $(DEBUG)
-CPPFLAGS	:= -std=c++17 -O3
+CPPFLAGS	:= -std=c++17 -O3 -g -D_GLIBCXX_DEBUG
 LDFLAGS		:= -pthread
 PREFIX		:= /usr/local
 TARGET_ARCH :=
