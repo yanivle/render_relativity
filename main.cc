@@ -46,7 +46,7 @@ void progress_thread() {
 DEFINE_COUNTER(rays);
 
 void render_thread(Image* image) {
-  int y = ++global_y;
+  int y = global_y++;
   while (y < scene.rendering_params().height) {
     // std::cout << "Rendering line: " << y << std::endl;
     for (int x = 0; x < scene.rendering_params().width; ++x) {
@@ -64,7 +64,7 @@ void render_thread(Image* image) {
       }
       (*image)(x, y) = Color::average(colors);
     }
-    y = ++global_y;
+    y = global_y++;
   }
 }
 
