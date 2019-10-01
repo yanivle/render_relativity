@@ -40,10 +40,14 @@ ALL_LDLIBS		:= -lc
 
 # Source, Binaries, Dependencies
 SRC			:= $(wildcard $(SRCDIR)/*.cc)
+ADDITIONAL_SRCS := ../counters.cc
 OBJ			:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRC:.cc=.o))
+ADDITIONAL_OBJS := $(patsubst ../%,$(OBJDIR)/%,$(ADDITIONAL_SRCS:.cc=.o))
 DEP			:= $(OBJ:.o=.d)
+ADDITIONAL_DEPS	:= $(ADDITIONAL_OBJS:.o=.d)
 BIN			:= $(BINDIR)/$(TARGET)
 -include $(DEP)
+-include $(ADDITIONAL_DEPS)
 
 # Verbosity Control, ala automake
 V 			= 1
@@ -87,7 +91,7 @@ dir:
 	@mkdir -p $(BINDIR)
 
 
-$(BIN): $(OBJ)
+$(BIN): $(OBJ) $(ADDITIONAL_OBJS)
 	$(LD) $(ALL_LDFLAGS) $^ $(ALL_LDLIBS) -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cc

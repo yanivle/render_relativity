@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include "world_constants.h"
 #include <atomic>
+#include "counters.h"
 
 std::atomic<int> global_y = 0;
 Renderer renderer;
@@ -42,6 +43,8 @@ void progress_thread() {
   progress.done();
 }
 
+DEFINE_COUNTER(rays);
+
 void render_thread(Image* image) {
   int y = ++global_y;
   while (y < scene.rendering_params().height) {
@@ -54,6 +57,7 @@ void render_thread(Image* image) {
           float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
           float z_dir = scene.rendering_params().screen_z;
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
+          COUNTER_INC(rays);
 
           colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
         }
@@ -120,6 +124,8 @@ int main(void) {
     img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;
+
+    std::cout << COUNTERS_STR() << std::endl;
   }
 
   return EXIT_SUCCESS;
