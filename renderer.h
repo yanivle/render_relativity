@@ -5,6 +5,7 @@
 #include "vec3.h"
 #include "color.h"
 #include "scene.h"
+#include "counters.h"
 
 class Renderer {
 public:
@@ -45,7 +46,9 @@ public:
 
 private:
   bool march(Ray& ray, const Scene& scene, SDFResult* res, int* num_steps) const {
+    DEFINE_COUNTER(num_marching_steps);
     for (*num_steps = 0; *num_steps < scene.rendering_params().max_marching_steps; ++(*num_steps)) {
+      COUNTER_INC(num_marching_steps);
       *res = scene.root()->sdf(ray.origin);
       if (res->dist < scene.rendering_params().epsilon) {
         return true;
