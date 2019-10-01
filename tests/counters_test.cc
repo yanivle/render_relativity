@@ -44,5 +44,9 @@ TEST_CASE("Multi-threaded counters work", "[COUNTERS]") {
     unsigned long global_val = COUNTERS_GLOBAL_VALUE(test2);
     CHECK(local_val == 0);
     CHECK(global_val == final_counter_value);
-    CHECK(COUNTERS_STR() == "Counter(test1): 150\nCounter(test2): 30000000\n");
+    const char* counter_str_golden = R"(Counters:
+  test1                150
+  test2                30,000,000
+)";
+    CHECK(COUNTERS_STR() == counter_str_golden);
 }
