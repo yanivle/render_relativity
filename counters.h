@@ -32,6 +32,7 @@
 #include <iostream>
 #include <locale>
 #include <iomanip>
+#include "logging.h"
 
 typedef unsigned long CounterValueType;
 
@@ -70,10 +71,8 @@ public:
       std::vector<LocalCounter*>& vec = local_counters_[counter->name()];
       auto it = std::find(vec.begin(), vec.end(), counter);
 
-      if (it == vec.end()) {
-          std::cerr << "ERROR: GlobalCounterSet::Unregister: invalid counter - name = " << counter->name() << std::endl;
-          return;
-      }
+      CHECK(it != vec.end()) << "invalid counter - name = " << counter->name();
+
       std::swap(*it, vec.back());
       vec.pop_back();
 

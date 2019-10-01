@@ -1,5 +1,4 @@
 # General cleanups
-* Add general CHECK() mechanism
 * Give scenes names
 * Clean Makefiles
 * Make colors 0-1 instead of 0-255

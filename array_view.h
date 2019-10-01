@@ -8,6 +8,8 @@
 #include <sstream>
 #include <fstream>
 
+#include "logging.h"
+
 template <class value_type>
 class ArrayView {
 public:
@@ -58,18 +60,12 @@ public:
     };
     reference at(std::size_t i) {
         size_t idx = index(i);
-        if (idx >= size_) {
-            std::cerr << "ERROR: ArrayView: Invalid access to index " << i << " with size "
-                      << size_ << std::endl;
-        }
+        CHECK(idx < size_) << "Invalid access to index " << i << " with size " << size_;
         return data_[idx];
     };
     const_reference at(std::size_t i) const {
         size_t idx = index(i);
-        if (idx >= size_) {
-            std::cerr << "ERROR: ArrayView: Invalid access to index " << i << " with size "
-                      << size_ << std::endl;
-        }
+        CHECK(idx < size_) << "Invalid access to index " << i << " with size " << size_;
         return data_[idx];
     };
 
@@ -84,10 +80,7 @@ public:
     // Assignment.
     template <typename container_type>
     void operator=(const container_type& c) {
-        if (c.size() != size()) {
-            std::cerr << "ERROR: ArrayView: Invalid size for assignment " << c.size() << " vs "
-                      << size() << std::endl;
-        }
+        CHECK(c.size() == size()) << "Invalid size for assignment " << c.size() << " vs " << size();
         for (size_t i = 0; i < size_; ++i) {
             (*this)[i] = c[i];
         }

@@ -45,9 +45,7 @@ public:
     data_ = new value_type[size_];
     int i = 0;
     for (const auto& l : lst) {
-      if (l.size() != width_) {
-        std::cerr << "ERROR: Array2D: Initializing Array2D from inconsistent initializer_list." << std::endl;
-      }
+      CHECK(l.size() == width_) << "Initializing Array2D from inconsistent initializer_list.";
       for (const auto& v : l) {
         data_[i] = v;
         i++;
@@ -113,30 +111,22 @@ public:
   }
 
   value_type& at(int x, int y) {
-    if (!is_safe(x, y)) {
-      std::cerr << "ERROR: Array2D: unsafe access - x: " << x << " y: " << y << std::endl;
-    }
+    CHECK(is_safe(x, y)) << "unsafe access - x: " << x << " y: " << y;
     return data_[index(x, y)];
   }
 
   const value_type& at(int x, int y) const {
-    if (!is_safe(x, y)) {
-      std::cerr << "ERROR: Array2D: unsafe access - x: " << x << " y: " << y << std::endl;
-    }
+    CHECK(is_safe(x, y)) << "unsafe access - x: " << x << " y: " << y;
     return data_[index(x, y)];
   }
 
   value_type& at(int i) {
-    if (!is_safe(i)) {
-      std::cerr << "ERROR: Array2D: unsafe access - i: " << i << std::endl;
-    }
+    CHECK(is_safe(i)) << "unsafe access - i: " << i;
     return data_[i];
   }
 
   const value_type& at(int i) const {
-    if (!is_safe(i)) {
-      std::cerr << "ERROR: Array2D: unsafe access - i: " << i << std::endl;
-    }
+    CHECK(is_safe(i)) << "unsafe access - i: " << i;
     return data_[i];
   }
 

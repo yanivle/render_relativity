@@ -5,6 +5,7 @@
 #include "color.h"
 #include "math.h"
 #include "fft.h"
+#include "logging.h"
 
 class Image : public Array2D<Color> {
 public:
@@ -76,10 +77,7 @@ public:
 
   void save(const char *filename) {
     FILE *fp = fopen(filename, "wb");
-    if (fp == 0) {
-        std::cerr << "ERROR: Image::save: cannot open file '" << filename << "'." << std::endl;
-        return;
-    }
+    CHECK(fp != 0) << "cannot open file '" << filename << "'.";
     (void) fprintf(fp, "P6\n%d %d\n255\n", (int)width_, (int)height_);
 
     for (int i = 0; i < size_; ++i) {
