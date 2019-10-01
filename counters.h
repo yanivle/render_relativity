@@ -30,6 +30,8 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <locale>
+#include <iomanip>
 
 typedef unsigned long CounterValueType;
 
@@ -91,8 +93,10 @@ public:
   std::string str() const {
     std::lock_guard<std::mutex> guard(mutex);
     std::stringstream res;
+    res << "Counters:" << std::endl;
     for (const auto& [name, value]: counters_no_lock()) {
-        res << "Counter(" << name << "): " << value << std::endl;
+        res.imbue(std::locale(""));
+        res << "  " << std::left << std::setw(20) << name << " " << std::fixed << value << std::endl;
     }
     return res.str();      
   }
