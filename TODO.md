@@ -1,6 +1,5 @@
 # General cleanups
 * Cluster stars into bounded galaxies
-* Add general counters infra (for optimizations)
 * Optimize sphere SDF with approximation removing the sqrt when possible
 * templatize SDFs (instead of using slow virutal functions)
 * add progress bar for post processing
