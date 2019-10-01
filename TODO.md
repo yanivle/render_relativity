@@ -2,11 +2,12 @@
 * Add general CHECK() mechanism
 * Give scenes names
 * Clean Makefiles
-* Add option to render number of iterations per ray (instead of color)
 * Make colors 0-1 instead of 0-255
+* Add option to control rendering_params from the CLI
 
 # Optimizations
-* Cluster stars into bounded galaxies
+* Cluster stars into bounded galaxies (using kd-tree or ball-tree)
+* Change SDF to SDF + intersect (return inf if no intersection)
 * Optimize sphere SDF with approximation removing the sqrt when possible
 * Templatize SDFs (instead of using slow virutal functions)
 * Profile and optimize
