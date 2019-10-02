@@ -1,54 +1,26 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#include "rgb.h"
 #include <sstream>
+#include <vector>
 
 struct Color {
   float r = 0, g = 0, b = 0;
 
   Color() {}
 
+  Color(float r, float g, float b) : r(r), g(g), b(b) {}
+
   Color(int packed) {
-    b = packed & 255;
+    b = float(packed & 255) / 255;
     packed >>= 8;
-    g = packed & 255;
+    g = float(packed & 255) / 255;
     packed >>= 8;
-    r = packed & 255; 
-  }
-
-  bool operator==(const Color& other) const {
-    return r == other.r && g == other.g && b == other.b;
-  }
-
-  bool operator!=(const Color& other) const {
-    return r != other.r || g != other.g || b != other.b;
-  }
-
-  RGB toRGB() const {
-    Color clamped = clamp(r, g, b);
-    return RGB(clamped.r, clamped.g, clamped.b);
+    r = float(packed & 255) / 255;
   }
 
   float luminance() const {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  }
-
-  Color(float r, float g, float b) {
-    this->r = r;
-    this->g = g;
-    this->b = b;
-  }
-
-  static
-  Color clamp(float r, float g, float b, float max=255) {
-    if (r < 0) r = 0;
-    if (r > max) r = max;
-    if (g < 0) g = 0;
-    if (g > max) g = max;
-    if (b < 0) b = 0;
-    if (b > max) b = max;
-    return Color(r, g, b);
   }
 
   void operator*= (float alpha) {
@@ -81,12 +53,12 @@ struct Color {
     return Color(r + other.r, g + other.g, b + other.b);
   }
 
-  static Color average(const std::vector<Color>& rgbs) {
+  static Color average(const std::vector<Color>& colors) {
     Color res;
-    for (int i = 0; i < rgbs.size(); ++i) {
-      res = res + rgbs[i];
+    for (int i = 0; i < colors.size(); ++i) {
+      res += colors[i];
     }
-    return res * (1 / rgbs.size());
+    return res * (1 / colors.size());
   }
 
   std::string str() const {
@@ -104,16 +76,16 @@ inline std::ostream &operator<<(std::ostream &os, const Color &color) {
 
 namespace colors {
   const Color BLACK(0, 0, 0);
-  const Color WHITE(255, 255, 255);
-  const Color RED(255, 0, 0);
-  const Color GREEN(0, 255, 0);
-  const Color BLUE(0, 0, 255);
-  const Color YELLOW(255, 255, 0);
-  const Color PURPLE(255, 0, 255);
-  const Color CYAN(0, 255, 255);
-  const Color GRAY(128, 128, 128);
-  const Color ORANGE(255, 165, 0);
-  const Color CORAL(255, 127, 80);
+  const Color WHITE(1, 1, 1);
+  const Color RED(1, 0, 0);
+  const Color GREEN(0, 1, 0);
+  const Color BLUE(0, 0, 1);
+  const Color YELLOW(1, 1, 0);
+  const Color PURPLE(1, 0, 1);
+  const Color CYAN(0, 1, 1);
+  const Color GRAY(0.5, 0.5, 0.5);
+  const Color ORANGE(1, 0.647, 0);
+  const Color CORAL(1, 0.498, 80);
 };
 
 #endif

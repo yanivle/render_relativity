@@ -6,6 +6,7 @@
 #include "math.h"
 #include "fft.h"
 #include "logging.h"
+#include "rgb.h"
 
 class Image : public Array2D<Color> {
 public:
@@ -81,7 +82,7 @@ public:
     (void) fprintf(fp, "P6\n%d %d\n255\n", (int)width_, (int)height_);
 
     for (int i = 0; i < size_; ++i) {
-      RGB rgb = (*this)(i).toRGB();
+      RGB rgb((*this)(i));
       (void) fwrite(&rgb, 1, 3, fp);
     }
     (void) fclose(fp);

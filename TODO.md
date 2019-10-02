@@ -1,7 +1,6 @@
 # General cleanups
 * Give scenes names
 * Clean Makefiles
-* Make colors 0-1 instead of 0-255
 * Add option to control rendering_params from the CLI
 
 # Optimizations
