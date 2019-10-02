@@ -1,5 +1,6 @@
 # General cleanups
 * Give scenes names
+* Add more c files?
 * Clean Makefiles
 * Add option to control rendering_params from the CLI
 
