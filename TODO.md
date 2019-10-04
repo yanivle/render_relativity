@@ -7,6 +7,7 @@
 * Add option to control rendering_params from the CLI
 * Clean up main
 * Fix progress bar for animations
+* Double the image before the FFT
 
 # Optimizations
 * Cluster stars into bounded galaxies (using kd-tree or ball-tree)
