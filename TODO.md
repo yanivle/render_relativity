@@ -1,8 +1,12 @@
 # General cleanups
-* Give scenes names
-* Add more c files?
 * Clean Makefiles
+* Add animator object
+* Give scenes names
+* Clean up scenes
+* Add more c files?
 * Add option to control rendering_params from the CLI
+* Clean up main
+* Fix progress bar for animations
 
 # Optimizations
 * Cluster stars into bounded galaxies (using kd-tree or ball-tree)
@@ -16,6 +20,7 @@
 # Features
 * Simulate moving scenes (and consider lorentz transformations)
 * Simulate scattering
+* Add colors to light sources
 * Add progress bar for post processing
 * Add rotation sdf
 * Experiment with variants on perlin noise

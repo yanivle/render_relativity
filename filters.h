@@ -23,9 +23,6 @@ namespace filters {
         int dx = std::abs(x - width / 2);
         int dy = std::abs(y - height / 2);
         res(x, y) = 1 / (1. + dx * dx + dy * dy);
-        if (dx > 16 || dy > 16) {
-          res(x, y) = 0;
-        }
       }
     }
     res = res.rotate(width / 2, height / 2);
@@ -33,20 +30,33 @@ namespace filters {
     return res;
   }
 
-  ComplexArray2D Ray(int width, int height) {
+  // TODO: move this to some general utils place (and I probably need this elsewhere).
+  inline float pos_fmod(float x, float m) {
+    float res = fmod(x, m);
+    if (res < 0) {
+      res += m;
+    }
+    return res;
+  }
+
+  ComplexArray2D Ray(int width, int height, int spokes=8, float rotation=(2 * M_PI) / 100, float ray_width=M_PI / 64) {
     ComplexArray2D res(width, height);
+    float arc = (2 * M_PI) / spokes;
+    float mid_arc = arc / 2;
+    float ray_width_2 = ray_width * ray_width;
+
     for (int y = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x) {
         float dx = x - width / 2;
         float dy = y - height / 2;
-        float theta = atan(dy / (dx + 0.000001));
-        float dtheta = fmod(theta + M_PI / 8, M_PI / 4);
-        if (dtheta < 0) {
-          dtheta += M_PI / 4;
-        }
+        float theta = atan(dy / (dx + 0.000000001));
+        float dtheta = pos_fmod(theta + rotation, arc);
         float r2 = dx * dx + dy * dy;
-        if (dtheta < M_PI / 64) {
-          res(x, y) = 1 / (1 + r2 + 20 * dtheta);
+        float angular_distance_from_mid_arc = (dtheta - mid_arc);
+        float angular_distance_from_mid_arc_2 = angular_distance_from_mid_arc * angular_distance_from_mid_arc;
+
+        if (angular_distance_from_mid_arc_2 < ray_width_2) {
+          res(x, y) = 1 / (0.001 + r2);
         }
       }
     }

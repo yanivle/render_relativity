@@ -165,7 +165,7 @@ TEST_CASE("Bloom convolution works", "[FFT]") {
       for (const int& freq : freqs) {
         v += sin(x * M_PI * 2 * freq / 1024) + cos(y * M_PI * 2 * freq / 1024);
       }
-      v *= 1000;
+      v *= (1000 / 255);
       if (v < 0) v = 0;
       image(x, y) = Color(v, 0, 0);
     }
@@ -181,5 +181,22 @@ TEST_CASE("Bloom convolution works", "[FFT]") {
 
   Image golden(1024, 1024);
   golden.deserialize("tests/golden_bloom.img");
+  CHECK_THAT(image, IsApproximatelyEqualTo(golden));
+}
+
+TEST_CASE("Bloom convolution single point works", "[FFT]") {
+  Image image(1024, 1024);
+  image(300, 300) = Color(10000, 0, 0);
+  INFO("Saving image...");
+  image.save("/tmp/convolution_single_point_test0.ppm");
+
+  INFO("Convolving...");
+  filters::Convolve(image, filters::Bloom(1024, 1024));
+
+  INFO("Saving image...");
+  image.save("/tmp/convolution_single_point_test1.ppm");
+
+  Image golden(1024, 1024);
+  golden.deserialize("tests/golden_bloom_single_point.img");
   CHECK_THAT(image, IsApproximatelyEqualTo(golden));
 }

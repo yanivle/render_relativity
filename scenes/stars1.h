@@ -2,6 +2,7 @@
 #define STARS1_H
 
 #include "../scene.h"
+#include "../rgb.h"
 #include "../world_constants.h"
 
 void AddStar(SDF** container, Scene* scene) {
@@ -79,34 +80,34 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
 
 void createStars1Scene(Scene *res) {
   // Sun.
-  AddBigStar(Color(255, 255, 0), Color(255, 255, 255), 1, 0.0, 1.0, 2, 20, 20+25, vec3(-25, 0, 0), 0, res);
+  AddBigStar(Color(RGB(255, 255, 0)), Color(RGB(255, 255, 255)), 1, 0.0, 1.0, 2, 20, 20+25, vec3(-25, 0, 0), 0, res);
 
   // Mercuri.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.2, vec3(20 + 2, 0, 0), 0, res);
+  AddBigStar(Color(RGB(161, 0, 0)), Color(RGB(100, 50, 0)), 15, 0.0, 0.01, 0.1, 0.1, 0.2, vec3(20 + 2, 0, 0), 0, res);
 
   // Venus.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 4, 0, 0), 0, res);
+  AddBigStar(Color(RGB(161, 0, 0)), Color(RGB(100, 50, 0)), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 4, 0, 0), 0, res);
 
   // Earth.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 6, 0, 0), 0, res);
+  AddBigStar(Color(RGB(79, 76, 176)), Color(RGB(106, 147, 214)), 15, 0.0, 0.01, 0.1, 0.1, 0.4, vec3(20 + 6, 0, 0), 0, res);
 
   // Mars.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.1, vec3(20 + 8, 0, 0), 0, res);
+  AddBigStar(Color(RGB(161, 0, 0)), Color(RGB(100, 50, 0)), 15, 0.0, 0.01, 0.1, 0.1, 0.1, vec3(20 + 8, 0, 0), 0, res);
 
   // Jupiter.
-  AddBigStar(Color(0xF6, 0xF7, 0xD2), Color(0xF9, 0xF4, 0x8F), 15, 0.0, 0.01, 0.1, 0.1, 1, vec3(20 + 10, 0, 0), 0, res);
+  AddBigStar(Color(RGB(0xF6, 0xF7, 0xD2)), Color(RGB(0xF9, 0xF4, 0x8F)), 15, 0.0, 0.01, 0.1, 0.1, 1, vec3(20 + 10, 0, 0), 0, res);
 
   // Saturn.
-  AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(20 + 14, 0, 0), 0, res);
+  AddBigStar(Color(RGB(161, 0, 0)), Color(RGB(100, 50, 0)), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(20 + 14, 0, 0), 0, res);
 
   // Uranus.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 18, 0, 0), 0, res);
+  AddBigStar(Color(RGB(79, 76, 176)), Color(RGB(106, 147, 214)), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 18, 0, 0), 0, res);
 
   // Neptune.
-  AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 20, 0, 0), 0, res);
+  AddBigStar(Color(RGB(79, 76, 176)), Color(RGB(106, 147, 214)), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20 + 20, 0, 0), 0, res);
 
   // Black hole.
-  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 1, res);
+  AddBigStar(Color(RGB(0, 0, 0)), Color(RGB(0, 0, 0)), 0, 0.0, 0.0, 0, 0, 0.1, vec3(20 + 8, 0, 0), 1, res);
 
   SDF* bound_obj = new Sphere(vec3(), 1000, Material());
   bound_obj = new Negate(bound_obj);
@@ -156,13 +157,7 @@ void createStars2Scene(Scene *res) {
   AddBigStar({Color(0xd8c596), Color(0x9fc164), Color(0xe9eff9), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6)}, 0.8, 0.1, 0.5, 0.8, 0.3, 8, vec3(20, -15, 5), 0, res);
 
   // // Jupiter.
-  AddBigStar(Color(255, 0, 0), Color(100, 100, 100), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
-
-  // // Saturn.
-  // AddBigStar(Color(161, 0, 0), Color(100, 50, 0), 15, 0.0, 0.01, 0.1, 0.1, 0.8, vec3(-15, -10, 50), 0, res);
-
-  // // Uranus.
-  // AddBigStar(Color(79, 76, 176), Color(106, 147, 214), 15, 0.0, 0.01, 0.1, 0.1, 0.5, vec3(20, 0, 30), 0, res);
+  AddBigStar(Color(1, 0, 0), Color(0.39, 0.39, 0.39), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
 
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 5, res, "blackhole_mass", "blackhole_radius");
@@ -172,11 +167,11 @@ void createStars2Scene(Scene *res) {
   MultiUnion* stars_container = new MultiUnion();
   res->addObject(new Bound(stars_container, bound_obj, 10));
   
-  const int NUM_BACKGROUND_STARS = 2000;
-  // const int NUM_BACKGROUND_STARS = 500;
-  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStarMultiUnion(stars_container, res);
-  }
+  // const int NUM_BACKGROUND_STARS = 2000;
+  // // const int NUM_BACKGROUND_STARS = 500;
+  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+  //   AddStarMultiUnion(stars_container, res);
+  // }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
@@ -192,8 +187,8 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  res->modifiable_rendering_params().use_gravity = true;
-  res->modifiable_rendering_params().animation_params.frames = 20;
+  // res->modifiable_rendering_params().use_gravity = true;
+  // res->modifiable_rendering_params().animation_params.frames = 20;
 }
 
 void createStars3Scene(Scene *res) {
@@ -208,7 +203,7 @@ void createStars3Scene(Scene *res) {
     float dx = radius * cos(angle);
     float dy = radius * sin(angle);
     vec3 pos = blackhole_center + vec3(dx, dy, 0);
-    AddBigStar(Color(79, 76, 176), Color(216, 197, 150), 1.3, 0.1, 0.5, 0.1, 0.3, 0.5, pos, 0, res);
+    AddBigStar(Color(RGB(79, 76, 176)), Color(RGB(216, 197, 150)), 1.3, 0.1, 0.5, 0.1, 0.3, 0.5, pos, 0, res);
   }
 
   res->modifiable_rendering_params().camera_settings.eye_pos = vec3(0, 0, -200);

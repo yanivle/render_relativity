@@ -73,13 +73,13 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  createScene1(&scene);
-  // createStars2Scene(&scene);
+  // createScene1(&scene);
+  createStars2Scene(&scene);
   // createCubeScene(&scene);
 
-  // renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
-  //                                           scene.rendering_params().camera_settings.target,
-  //                                           scene.rendering_params().camera_settings.up);
+  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
+                                            scene.rendering_params().camera_settings.target,
+                                            scene.rendering_params().camera_settings.up);
 
   std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
   std::cout << "Total lights: " << scene.lights().size() << std::endl;
@@ -119,8 +119,8 @@ int main(void) {
 
     // img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
-    // std::cout << "Applying post processing effects..." << std::endl;
-    // filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+    std::cout << "Applying post processing effects..." << std::endl;
+    filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
     img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;

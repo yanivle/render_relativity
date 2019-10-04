@@ -23,6 +23,10 @@ struct RGB {
     if (color.b < 0) b = 0;
     if (color.b > 1) b = 255;
   }
+
+  operator Color() const {
+    return Color(float(r) / 255, float(g) / 255, float(b) / 255);
+  }
 };
 
 #endif
