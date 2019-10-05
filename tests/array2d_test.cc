@@ -43,3 +43,20 @@ TEST_CASE("Serialize/deserialize work", "[Array2D]") {
 
     CHECK(arr == loaded);
 }
+
+TEST_CASE("Resize", "[Array2D]") {
+    Array2D<int> arr({{1, 2, 3},
+                      {4, 5, 6},
+                      {7, 8, 9}});
+
+    Array2D smaller({{1, 2},
+                     {4, 5}});
+
+    Array2D<int> larger({{1, 2, 3, 0},
+                         {4, 5, 6, 0},
+                         {7, 8, 9, 0},
+                         {0, 0, 0, 0}});
+
+    CHECK(arr.resize(2, 2) == smaller);
+    CHECK(arr.resize(4, 4) == larger);
+}

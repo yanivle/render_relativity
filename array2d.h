@@ -158,6 +158,17 @@ public:
     return res;
   }
 
+  // Resizing.
+  Array2D<value_type> resize(size_t width, size_t height) const {
+    Array2D<value_type> res(width, height);
+    for (int y = 0; y < height_; ++y) {
+      for (int x = 0; x < width_; ++x) {
+        res(x, y) = (*this)(x, y);
+      }
+    }
+    return res;
+  }
+
   // Debugging.
   void print(int cell_width=4, int precision=2) const {
     for (int y = 0; y < height_; ++y) {
