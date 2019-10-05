@@ -161,8 +161,10 @@ public:
   // Resizing.
   Array2D<value_type> resize(size_t width, size_t height) const {
     Array2D<value_type> res(width, height);
-    for (int y = 0; y < height_; ++y) {
-      for (int x = 0; x < width_; ++x) {
+    size_t w = std::min(width_, width);
+    size_t h = std::min(height_, height);
+    for (int y = 0; y < h; ++y) {
+      for (int x = 0; x < w; ++x) {
         res(x, y) = (*this)(x, y);
       }
     }
@@ -179,12 +181,20 @@ public:
     }
   }
 
-  std::string str() const {
+  std::string str(const int max_dim=3) const {
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(2);
     ss << "Array2D(" << std::endl;
     for (int y = 0; y < height(); ++y) {
+      if (y >= max_dim) {
+        ss << "...";
+        break;
+      }
       for (int x = 0; x < width(); ++x) {
+        if (x >= max_dim) {
+          ss << "...";
+          break;
+        }
         ss << (*this)(x, y);
         if (x < width() - 1) {
           ss << ", ";
