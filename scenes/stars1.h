@@ -28,12 +28,12 @@ void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
     color = colors::CORAL;
     break;
   }
-  float brightness = 0.5;
+  float brightness = 10;
   while (rand() % 2 == 0 && brightness < 128) {
     brightness *= 2;
   }
   Material material(color, brightness, 0, 0, 0);
-  vec3 center = vec3::random() * 1200;
+  vec3 center = vec3::random() * 1000;
   float radius = rand_range(0.3, 0.8);
   SDF* star = new Sphere(center, radius, material);
   container->addChild(star);
@@ -153,25 +153,25 @@ void createStars2Scene(Scene *res) {
   float sun_radius = 45;
   AddBigStar({Color(0xD14009), Color(0xFC9601), Color(0xFFCC33), Color(0xFFE484), Color(0xFFFFFF)}, 1, 5.0, 0.0, 2, 20, sun_radius, sun_center, 0, res);
 
-  // // Earth.
+  // Earth.
   AddBigStar({Color(0xd8c596), Color(0x9fc164), Color(0xe9eff9), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6), Color(0x4f4cb0), Color(0x6b93d6)}, 0.8, 0.1, 0.5, 0.8, 0.3, 8, vec3(20, -15, 5), 0, res);
 
-  // // Jupiter.
+  // Jupiter.
   AddBigStar(Color(1, 0, 0), Color(0.39, 0.39, 0.39), 3, 0.1, 0.7, 0.1, 0.2, 5, vec3(-30, -30, 45), 0, res);
 
   // Black hole.
-  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 5, res, "blackhole_mass", "blackhole_radius");
+  AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 3, res, "blackhole_mass", "blackhole_radius");
 
   SDF* bound_obj = new Sphere(vec3(), 1000, Material());
   bound_obj = new Negate(bound_obj);
   MultiUnion* stars_container = new MultiUnion();
-  res->addObject(new Bound(stars_container, bound_obj, 10));
+  res->addObject(new Bound(stars_container, bound_obj, 1));
   
   // const int NUM_BACKGROUND_STARS = 2000;
-  // // const int NUM_BACKGROUND_STARS = 500;
-  // for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-  //   AddStarMultiUnion(stars_container, res);
-  // }
+  const int NUM_BACKGROUND_STARS = 500;
+  for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
+    AddStarMultiUnion(stars_container, res);
+  }
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
