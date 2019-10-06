@@ -120,7 +120,9 @@ int main(void) {
     // img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
     std::cout << "Applying post processing effects..." << std::endl;
-    filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+    img = img.resize(img.width() * 2, img.height() * 2);
+    filters::Convolve(img, filters::Ray(scene.rendering_params().width * 2, scene.rendering_params().height * 2));
+    img = img.resize(img.width() / 2, img.height() / 2);
     img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;
