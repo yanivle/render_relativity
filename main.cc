@@ -77,6 +77,11 @@ int main(void) {
   createStars2Scene(&scene);
   // createCubeScene(&scene);
 
+  bool apply_post_processing = true;
+  bool double_image_before_convolution = true;
+  bool save_snapshot = true;
+  bool resume_from_snapshot = false;
+
   renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
                                             scene.rendering_params().camera_settings.target,
                                             scene.rendering_params().camera_settings.up);
@@ -91,39 +96,48 @@ int main(void) {
   Image img(scene.rendering_params().width, scene.rendering_params().height);
 
   for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
-    // float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
-    // vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
-    vec3 eye_movement;
-    renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
-                                              scene.rendering_params().camera_settings.target,
-                                              scene.rendering_params().camera_settings.up);
+    if (resume_from_snapshot) {
+      img.deserialize(counter_filename("output/render", frame, ".img"));
+    } else {
+      // float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
+      // vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
+      vec3 eye_movement;
+      renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
+                                                scene.rendering_params().camera_settings.target,
+                                                scene.rendering_params().camera_settings.up);
 
-    // *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
-    // *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
-    global_y = 0;
-    const int num_threads = std::thread::hardware_concurrency();
-    std::cout << "Rendering frame " << frame << "/"
-              << scene.rendering_params().animation_params.frames << " with "
-              << num_threads << " threads..." << std::endl;
-    std::vector<std::thread> threads;
-    for (int i = 0; i < num_threads; ++i) {
-      threads.push_back(std::thread(render_thread, &img));
+      // *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
+      // *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
+      global_y = 0;
+      const int num_threads = std::thread::hardware_concurrency();
+      std::cout << "Rendering frame " << frame << "/"
+                << scene.rendering_params().animation_params.frames << " with "
+                << num_threads << " threads..." << std::endl;
+      std::vector<std::thread> threads;
+      for (int i = 0; i < num_threads; ++i) {
+        threads.push_back(std::thread(render_thread, &img));
+      }
+      progress_thread();
+      for (std::thread& thread : threads) {
+        thread.join();
+      }
+
+      if (save_snapshot) {
+        img.serialize(counter_filename("output/render", frame, ".img"));
+      }
     }
-    progress_thread();
-    for (std::thread& thread : threads) {
-      thread.join();
+
+    if (apply_post_processing) {
+      std::cout << "Applying post processing effects..." << std::endl;
+      if (double_image_before_convolution) {
+        img = img.resize(img.width() * 2, img.height() * 2);
+        filters::Convolve(img, filters::Bloom(scene.rendering_params().width * 2, scene.rendering_params().height * 2));
+        img = img.resize(img.width() / 2, img.height() / 2);
+      } else {
+        filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+      }
     }
-
-    // img.serialize(counter_filename("output/render", frame, ".img"));
-    // img.deserialize("render.img");
-
-    // img.save(counter_filename("output/output", frame, ".ppm").c_str());
-
-    std::cout << "Applying post processing effects..." << std::endl;
-    img = img.resize(img.width() * 2, img.height() * 2);
-    filters::Convolve(img, filters::Ray(scene.rendering_params().width * 2, scene.rendering_params().height * 2));
-    img = img.resize(img.width() / 2, img.height() / 2);
-    img.save(counter_filename("output/output_bloomed", frame, ".ppm").c_str());
+    img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
     world_constants::time += scene.rendering_params().animation_params.time_delta;
 
