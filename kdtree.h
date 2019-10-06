@@ -49,7 +49,8 @@ public:
   }
 
   void compile() {
-      if (pivot.spheres.size() < 3) {
+      // TODO: play with this number (10 seemed to work faster than 3).
+      if (pivot.spheres.size() < 8) {
           return;
       }
       std::vector<float> xs, ys, zs;
