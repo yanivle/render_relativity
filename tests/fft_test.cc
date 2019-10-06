@@ -156,7 +156,7 @@ TEST_CASE("FFT 2D Works", "[FFT]") {
   CHECK_THAT(image3, IsApproximatelyEqualTo(image));
 }
 
-TEST_CASE("Bloom convolution works", "[FFT]") {
+TEST_CASE("Bloom convolution", "[FFT]") {
   Image image(1024, 1024);
   std::vector<int> freqs{2, 5, 17, 50};
   for (int y = 0; y < 1024; ++y) {
@@ -184,14 +184,16 @@ TEST_CASE("Bloom convolution works", "[FFT]") {
   CHECK_THAT(image, IsApproximatelyEqualTo(golden));
 }
 
-TEST_CASE("Bloom convolution single point works", "[FFT]") {
+TEST_CASE("Bloom convolution single point", "[FFT]") {
   Image image(1024, 1024);
   image(300, 300) = Color(10000, 0, 0);
   INFO("Saving image...");
   image.save("/tmp/convolution_single_point_test0.ppm");
 
   INFO("Convolving...");
-  filters::Convolve(image, filters::Bloom(1024, 1024));
+  image = std::move(image.resize(2048, 2048));
+  filters::Convolve(image, filters::Bloom(2048, 2048));
+  image = std::move(image.resize(1024, 1024));
 
   INFO("Saving image...");
   image.save("/tmp/convolution_single_point_test1.ppm");
