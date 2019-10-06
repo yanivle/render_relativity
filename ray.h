@@ -19,7 +19,7 @@ struct Ray {
       origin += direction * distance;
     }
 
-    void marchWithGravity(float distance, const std::vector<PointMass*>& masses, float gravity_slowdown_factor) {
+    void marchWithGravity(float distance, const std::vector<PointMass*>& masses) {
       vec3 total_force;
       for (int i = 0; i < masses.size(); ++i) {
         vec3 to_mass = masses[i]->v - origin;
@@ -27,9 +27,12 @@ struct Ray {
         vec3 norm_to_mass = to_mass.normalize();
         total_force += norm_to_mass * (masses[i]->mass / dist_to_mass_2);
       }
-      direction += total_force / gravity_slowdown_factor;
+      // TODO: move this arbitrary physics constant somewhere cleaner.
+      distance /= (1. + 10000. * total_force.len());
+
+      direction += total_force * distance;
       direction.inormalize();
-      origin += direction * distance / gravity_slowdown_factor;
+      origin += direction * distance;
     }
 
     std::string str() const {

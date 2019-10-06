@@ -7,7 +7,6 @@
 * Add option to control rendering_params from the CLI
 * Clean up main
 * Fix progress bar for animations
-* Change gravity slowdown factor to absolute max distance
 
 # Optimizations
 * Cluster stars into bounded galaxies (using kd-tree or ball-tree)

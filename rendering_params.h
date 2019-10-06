@@ -16,7 +16,6 @@ struct RenderingParams {
   bool use_gravity = false;
   bool light_decay = false;
   float screen_z = 5;
-  float gravity_slowdown_factor = 10;
 
   bool render_march_iterations = false;
 
