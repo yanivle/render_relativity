@@ -53,6 +53,10 @@ struct Color {
     return Color(r + other.r, g + other.g, b + other.b);
   }
 
+  bool operator== (const Color& other) const {
+    return r == other.r && g == other.g && b == other.b;
+  }
+
   static Color average(const std::vector<Color>& colors) {
     Color res;
     for (int i = 0; i < colors.size(); ++i) {
