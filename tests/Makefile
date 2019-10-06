@@ -40,7 +40,7 @@ ALL_LDLIBS		:= -lc
 
 # Source, Binaries, Dependencies
 SRC			:= $(wildcard $(SRCDIR)/*.cc)
-ADDITIONAL_SRCS := ../counters.cc
+ADDITIONAL_SRCS := ../counters.cc ../material.cc ../object_registry.cc
 OBJ			:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRC:.cc=.o))
 ADDITIONAL_OBJS := $(patsubst ../%,$(OBJDIR)/%,$(ADDITIONAL_SRCS:.cc=.o))
 DEP			:= $(OBJ:.o=.d)
