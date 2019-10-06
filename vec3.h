@@ -4,6 +4,9 @@
 #include <math.h>
 #include <string>
 #include <sstream>
+#include <ostream>
+
+#include "logging.h"
 
 struct Vec3 {
   float x, y, z;
@@ -61,6 +64,23 @@ struct Vec3 {
     Vec3 res = *this;
     res /= alpha;
     return res;
+  }
+
+  enum Axis {
+    X = 0, Y = 1, Z = 2
+  };
+
+  float operator[](Axis axis) const {
+    switch (axis) {
+      case X:
+        return x;
+      case Y:
+        return y;
+      case Z:
+        return z;
+      default:
+        CHECK(false) << "invalid axis " << axis;
+    }
   }
 
   float len2() const {
