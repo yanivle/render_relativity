@@ -89,7 +89,7 @@ namespace colors {
   const Color CYAN(0, 1, 1);
   const Color GRAY(0.5, 0.5, 0.5);
   const Color ORANGE(1, 0.647, 0);
-  const Color CORAL(1, 0.498, 80);
+  const Color CORAL(1, 0.498, 0.314);
 };
 
 #endif
