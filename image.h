@@ -13,6 +13,12 @@ public:
   Image(int width, int height) :
     Array2D<Color>(width, height) {}
 
+  Image(const Array2D<Color>& arr) :
+    Array2D<Color>(arr) {}
+
+  Image(const Array2D<Color>&& arr) :
+    Array2D<Color>(std::move(arr)) {}
+
   enum Channel {
     RED, GREEN, BLUE
   };
