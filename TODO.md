@@ -7,7 +7,6 @@
 * Add option to control rendering_params from the CLI
 * Clean up main
 * Fix progress bar for animations
-* Double the image before the FFT
 * Change gravity slowdown factor to absolute max distance
 
 # Optimizations
