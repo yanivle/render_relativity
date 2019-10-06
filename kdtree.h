@@ -9,7 +9,7 @@
 
 class SpheresKDTree : public SDF {
   struct Pivot {
-    vec3::Axis axis;
+    vec3::Axis axis = vec3::X;
     float value;
     std::vector<Sphere*> spheres;
   };

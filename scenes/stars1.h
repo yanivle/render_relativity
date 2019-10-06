@@ -1,8 +1,9 @@
 #ifndef STARS1_H
 #define STARS1_H
 
-#include "../scene.h"
+#include "../kdtree.h"
 #include "../rgb.h"
+#include "../scene.h"
 #include "../world_constants.h"
 
 void AddStar(SDF** container, Scene* scene) {
@@ -18,25 +19,36 @@ void AddStar(SDF** container, Scene* scene) {
   }
 }
 
-void AddStarMultiUnion(MultiUnion* container, Scene* scene) {
+Sphere* createStar() {
   Color color = colors::WHITE;
-  switch (rand() % 10) {
+  switch (rand() % 50) {
   case 0:
+  case 1:
+  case 2:
+  case 3:
+  case 4:
     color = colors::ORANGE;
     break;
-  case 1:
+  case 5:
     color = colors::CORAL;
     break;
   }
-  float brightness = 10;
+  float brightness = 5;
   while (rand() % 2 == 0 && brightness < 128) {
     brightness *= 2;
   }
   Material material(color, brightness, 0, 0, 0);
   vec3 center = vec3::random() * 1000;
   float radius = rand_range(0.3, 0.8);
-  SDF* star = new Sphere(center, radius, material);
-  container->addChild(star);
+  return new Sphere(center, radius, material);
+}
+
+void AddStarMultiUnion(MultiUnion* container) {
+  container->addChild(createStar());
+}
+
+void AddStarKDTree(SpheresKDTree* container) {
+  container->addChild(createStar());
 }
 
 void AddBigStar(std::initializer_list<Color> colors, float perlin_scale,
@@ -164,14 +176,15 @@ void createStars2Scene(Scene *res) {
 
   SDF* bound_obj = new Sphere(vec3(), 1000, Material());
   bound_obj = new Negate(bound_obj);
-  MultiUnion* stars_container = new MultiUnion();
-  res->addObject(new Bound(stars_container, bound_obj, 1));
+  SpheresKDTree* kdtree = new SpheresKDTree();
+  res->addObject(new Bound(kdtree, bound_obj, 1));
   
-  // const int NUM_BACKGROUND_STARS = 2000;
-  const int NUM_BACKGROUND_STARS = 500;
+  const int NUM_BACKGROUND_STARS = 100000;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
-    AddStarMultiUnion(stars_container, res);
+    AddStarKDTree(kdtree);
   }
+
+  kdtree->compile();
 
   for (int i = 0; i < 500; ++i) {
     res->addLight(new PointLight(sun_center + vec3::random() * (sun_radius + 2)));
@@ -187,7 +200,7 @@ void createStars2Scene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  // res->modifiable_rendering_params().use_gravity = true;
+  res->modifiable_rendering_params().use_gravity = true;
   // res->modifiable_rendering_params().animation_params.frames = 20;
 }
 
