@@ -1,15 +1,17 @@
 #ifndef SDF_H
 #define SDF_H
 
-#include "vec3.h"
 #include <algorithm>
+#include <cmath>
 #include <vector>
+
+#include "vec3.h"
 #include "color.h"
+#include "counters.h"
 #include "material.h"
 #include "colorizer.h"
 #include "perlin_noise.h"
 #include "object_registry.h"
-#include <cmath>
 
 struct SDFResult {
   SDFResult() {}
@@ -21,9 +23,14 @@ struct SDFResult {
   Material material;
 };
 
+#define SDF_COUNTERS(name) \
+    DEFINE_COUNTER(name ## _sdf_calls); \
+    COUNTER_INC(name ## _sdf_calls);
+
 class SDF {
 public:
   virtual SDFResult sdf(const vec3& v) const = 0;
+
   virtual ~SDF() {}
 
   SDF() {
@@ -107,6 +114,7 @@ public:
   }
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(sphere);
     float dist = (v - center).len() - radius;
     return SDFResult(dist, material);
   }
@@ -122,6 +130,8 @@ public:
     : child(child), scale(scale), magnitude(magnitude) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(perlin_deformation);
+
     float alpha = perlin.noise(v.x * scale, v.y * scale, v.z * scale);
     SDFResult res = child->sdf(v);
     res.dist += magnitude * alpha;
@@ -151,6 +161,7 @@ public:
   }
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(plane);
     SDFResult res(v.dot(normal), material);
     return res;
   }
@@ -168,6 +179,7 @@ public:
   }
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(multi_union);
     SDFResult res(1000000000, Material());
     const float bound = 0;
     for (int i = 0; i < children.size(); ++i) {
@@ -195,6 +207,7 @@ public:
   Union(SDF *obj1, SDF* obj2): obj1(obj1), obj2(obj2) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(union);
     SDFResult r1 = obj1->sdf(v);
     // TODO: can I make bound tighter?
     const float bound = 0;
@@ -222,6 +235,7 @@ public:
   Intersection(SDF *obj1, SDF* obj2): obj1(obj1), obj2(obj2) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(intersection);
     SDFResult r1 = obj1->sdf(v);
     // TODO: can I make bound tighter?
     const float bound = 1;
@@ -249,6 +263,7 @@ public:
   Smooth(SDF *obj1, SDF* obj2, float k): obj1(obj1), obj2(obj2), k(k) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(smooth);
     SDFResult r1 = obj1->sdf(v);
     SDFResult r2 = obj2->sdf(v);
     float e1 = exp2(-k * r1.dist);
@@ -274,6 +289,7 @@ public:
   Periodic(SDF *child, const vec3& period): child(child), period(period) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(periodic);
     SDFResult res = child->sdf(v.mod(period) - period * 0.5);
     return res;
   }
@@ -288,6 +304,7 @@ public:
   Translate(SDF *child, const vec3& t): child(child), t(t) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(translate);
     return child->sdf(v - t);
   }
 
@@ -301,6 +318,7 @@ public:
   Expand(SDF *child, float r): child(child), r(r) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(expand);
     SDFResult res = child->sdf(v);
     res.dist -= r;
     return res;
@@ -316,6 +334,7 @@ public:
   Scale(SDF *child, float r): child(child), r(r) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(scale);
     SDFResult res = child->sdf(v / r);
     res.dist *= r;
     return res;
@@ -331,6 +350,7 @@ public:
   PointwiseMultiply(SDF *child, const vec3& t): child(child), t(t) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(pointwise_multiply);
     return child->sdf(vec3(v.x * t.x, v.y * t.y, v.z * t.z));
   }
 
@@ -345,6 +365,7 @@ public:
   Negate(SDF *child): child(child) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(negate);
     SDFResult res = child->sdf(v);
     res.dist = -res.dist;
     return res;
@@ -360,6 +381,7 @@ class Bound : public SDF {
     : child(child), bound_sdf(bound_sdf), bound_dist(bound_dist) {}
 
   SDFResult sdf(const vec3& v) const {
+    SDF_COUNTERS(bound);
     SDFResult bound_res = bound_sdf->sdf(v);
     if (bound_res.dist > bound_dist) {
       return bound_res;
