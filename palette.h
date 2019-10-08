@@ -48,6 +48,15 @@ public:
     return keys[keys.size() - 1].color;
   }
 
+  static Palette RedHot() {
+    Palette p;
+    p.addKey(Key(0.0, Color(0, 0, 0)));
+    p.addKey(Key(1. / 3, Color(1, 0, 0)));
+    p.addKey(Key(2. / 3, Color(1, 1, 0)));
+    p.addKey(Key(1.0, Color(1, 1, 1)));
+    return p;
+  }
+
   static Palette Veridis() {
     Palette p;
     p.addKey(Key(0.0, Color(RGB(0, 32, 76))));
