@@ -45,8 +45,36 @@ TEST_CASE("Multi-threaded counters work", "[COUNTERS]") {
     CHECK(local_val == 0);
     CHECK(global_val == final_counter_value);
     const char* counter_str_golden = R"(Counters:
-  test1                150
-  test2                30,000,000
+  test1                          150
+  test2                          30,000,000
+)";
+    CHECK(COUNTERS_STR() == counter_str_golden);
+}
+
+TEST_CASE("Counters are sorted", "[COUNTERS]") {
+    DEFINE_COUNTER(sorting_test100);
+    DEFINE_COUNTER(sorting_test2);
+    DEFINE_COUNTER(sorting_test30);
+    DEFINE_COUNTER(sorting_test40);
+    DEFINE_COUNTER(sorting_test50);
+    DEFINE_COUNTER(sorting_test7);
+
+    COUNTER_INC_BY(sorting_test40,  40);
+    COUNTER_INC_BY(sorting_test30,  30);
+    COUNTER_INC_BY(sorting_test7,   7);
+    COUNTER_INC_BY(sorting_test100, 100);
+    COUNTER_INC_BY(sorting_test2,   2);
+    COUNTER_INC_BY(sorting_test50,  50);
+
+    const char* counter_str_golden = R"(Counters:
+  sorting_test2                  2
+  sorting_test7                  7
+  sorting_test30                 30
+  sorting_test40                 40
+  sorting_test50                 50
+  sorting_test100                100
+  test1                          150
+  test2                          30,000,000
 )";
     CHECK(COUNTERS_STR() == counter_str_golden);
 }

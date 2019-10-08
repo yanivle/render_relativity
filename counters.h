@@ -32,6 +32,7 @@
 #include <iostream>
 #include <locale>
 #include <iomanip>
+#include <set>
 #include "logging.h"
 
 typedef unsigned long CounterValueType;
@@ -89,13 +90,30 @@ public:
     return counters_no_lock();
   }
 
+  typedef std::function<bool(std::pair<std::string, CounterValueType>,
+                             std::pair<std::string, CounterValueType>)> Comparator;
+
+  static std::set<std::pair<std::string, CounterValueType>, Comparator> sortCounters(
+    const std::map<std::string, CounterValueType>& counters) {
+    std::set<std::pair<std::string, CounterValueType>, Comparator> res(
+      counters.begin(), counters.end(), [](std::pair<std::string, CounterValueType> e1,
+                                           std::pair<std::string, CounterValueType> e2) {
+				return e1.second < e2.second;
+			});
+    return res;
+  }
+
   std::string str() const {
     std::lock_guard<std::mutex> guard(mutex);
     std::stringstream res;
+
+    std::set<std::pair<std::string, CounterValueType>, Comparator> sorted_counters =
+      sortCounters(counters_no_lock());
+
     res << "Counters:" << std::endl;
-    for (const auto& [name, value]: counters_no_lock()) {
+    for (const auto& [name, value]: sorted_counters) {
         res.imbue(std::locale(""));
-        res << "  " << std::left << std::setw(20) << name << " " << std::fixed << value << std::endl;
+        res << "  " << std::left << std::setw(30) << name << " " << std::fixed << value << std::endl;
     }
     return res.str();      
   }
