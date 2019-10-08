@@ -6,10 +6,10 @@
 * Add more c files?
 * Add option to control rendering_params from the CLI
 * Clean up main
+* Clean up star scenes (split to files)
 * Fix progress bar for animations
 
 # Optimizations
-* Cluster stars into bounded galaxies (using kd-tree or ball-tree)
 * Change SDF to SDF + intersect (return inf if no intersection)
 * Optimize sphere SDF with approximation removing the sqrt when possible
 * Templatize SDFs (instead of using slow virutal functions)
@@ -22,7 +22,10 @@
 * Simulate scattering
 * Add colors to light sources
 * Add progress bar for post processing
+* Add progress bar for frames when rendering animations
 * Add rotation sdf
 * Experiment with variants on perlin noise
     * Add octaves
     * Change easing function (e.g. x^3 glued to itself rotated)
+* Add counter groups
+
