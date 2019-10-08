@@ -74,6 +74,7 @@ void AddBigStar(const Color& color1, const Color& color2, float perlin_scale,
 }
 
 void createStarsScene(Scene *res) {
+  res->setName("Stars");
   // Sun.
   vec3 sun_center(0, 0, 200);
   float sun_radius = 45;
@@ -117,7 +118,7 @@ void createStarsScene(Scene *res) {
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
   res->modifiable_rendering_params().use_gravity = true;
-  res->modifiable_rendering_params().animation_params.frames = 100;
+  // res->modifiable_rendering_params().animation_params.frames = 100;
 }
 
 #endif

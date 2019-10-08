@@ -36,6 +36,14 @@ public:
     }
   }
 
+  const std::string name() const {
+    return name_;
+  }
+
+  void setName(const std::string& name) {
+    name_ = name;
+  }
+
   const SDF* root() const {
     return root_sdf;
   }
@@ -66,12 +74,23 @@ public:
     return masses_;
   }
 
+  std::string str() const {
+    std::ostringstream ss;
+    ss << "Scene: " << name() << std::endl;
+    ss << "Resolution: " << rendering_params().width << 'x'
+                         << rendering_params().height << std::endl;
+    ss << "Total masses: " << masses().size() << std::endl;
+    ss << "Total lights: " << lights().size() << std::endl;
+    return ss.str();
+  }
+
 private:
   RenderingParams rendering_params_;
   MultiUnion* root_sdf = 0;
   std::vector<SDF*> objects_;
   std::vector<Light*> lights_;
   std::vector<PointMass*> masses_;
+  std::string name_ = "unnamed";
 };
 
 #endif

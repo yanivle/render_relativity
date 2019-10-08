@@ -1,6 +1,7 @@
 #include "../scene.h"
 
 void createScene1(Scene* res) {
+  res->setName("Capsules");
   SDF* s1 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::RED, 0.1, 1.0, 0.5, 0));
   SDF* s2 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::YELLOW, 0.1, 1.0, 0.5, 0));
   SDF* s3 = new Sphere(vec3(0, 0, 0), 1.5, Material(colors::GREEN, 0.1, 1.0, 0.5, 0));
