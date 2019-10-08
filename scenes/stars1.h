@@ -174,12 +174,14 @@ void createStars2Scene(Scene *res) {
   // Black hole.
   AddBigStar(Color(0, 0, 0), Color(0, 0, 0), 0, 0.0, 0.0, 0, 0, 7, vec3(-20, -15, 10), 3, res, "blackhole_mass", "blackhole_radius");
 
-  SDF* bound_obj = new Sphere(vec3(), 1000, Material());
-  bound_obj = new Negate(bound_obj);
+  SDF* inner_sphere = new Sphere(vec3(), 999, Material());
+  SDF* outer_sphere = new Sphere(vec3(), 1001, Material());
+  SDF* bound_obj = new Intersection(new Negate(inner_sphere), outer_sphere);
+
   SpheresKDTree* kdtree = new SpheresKDTree();
   res->addObject(new Bound(kdtree, bound_obj, 1));
   
-  const int NUM_BACKGROUND_STARS = 100000;
+  const int NUM_BACKGROUND_STARS = 1000000;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
     AddStarKDTree(kdtree);
   }
