@@ -74,7 +74,7 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 
 int main(void) {
   // createScene1(&scene);
-  createStars2Scene(&scene);
+  createStarsScene(&scene);
   // createCubeScene(&scene);
 
   bool apply_post_processing = true;
