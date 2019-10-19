@@ -96,7 +96,8 @@ void createStarsScene(Scene *res) {
   SpheresKDTree* kdtree = new SpheresKDTree();
   res->addObject(new Bound(kdtree, bound_obj, 1));
   
-  const int NUM_BACKGROUND_STARS = 1000;
+  const int NUM_BACKGROUND_STARS = 100000;
+  // const int NUM_BACKGROUND_STARS = 1000;
   for (int i = 0; i < NUM_BACKGROUND_STARS; ++i) {
     AddStarKDTree(kdtree);
   }
@@ -117,7 +118,7 @@ void createStarsScene(Scene *res) {
 
   res->addLight(new DirectionalLight(vec3(-1, -1, -1)));
 
-  res->modifiable_rendering_params().use_gravity = true;
+  // res->modifiable_rendering_params().use_gravity = true;
   // res->modifiable_rendering_params().animation_params.frames = 100;
 }
 
