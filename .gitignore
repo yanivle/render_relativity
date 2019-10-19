@@ -7,3 +7,4 @@ c_cpp_properties.json
 output/
 bin/
 obj/
+.depend
