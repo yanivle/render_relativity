@@ -1,5 +1,4 @@
 # General cleanups
-* Clean Makefiles
 * Add animator object
 * Add more c files?
 * Add option to control rendering_params from the CLI
