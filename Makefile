@@ -1,48 +1,19 @@
-# General
 CC			= clang++
 LD			= clang++
 RM			= rm -rf
-RMDIR		= rmdir
-# DEBUG		= -ggdb -O0 -march=native -ftrapv
-OPEN=open
+OPEN		= open
 
-TARGET		= render_relativity
-SRCDIR		= .
 OBJDIR		= obj
 BINDIR		= bin
 
-# CFLAGS, LDFLAGS, CPPFLAGS, PREFIX can be overriden on CLI
-CFLAGS		:= $(DEBUG)
-CPPFLAGS	:= -std=c++17 -O3 -g -D_GLIBCXX_DEBUG
-LDFLAGS		:= -pthread
-PREFIX		:= /usr/local
-TARGET_ARCH :=
+CPPFLAGS	:= -std=c++17 -O3 -g -D_GLIBCXX_DEBUG -c
+LDFLAGS		:= -pthread -lc
 
-# Compiler Flags
-ALL_CFLAGS		:= $(CFLAGS)
-# ALL_CFLAGS		+= -Wall -Wextra -pedantic -ansi
-# ALL_CFLAGS		+= -fno-strict-aliasing
-# ALL_CFLAGS		+= -Wuninitialized -Winit-self -Wfloat-equal
-# ALL_CFLAGS		+= -Wundef -Wshadow -Wc++-compat -Wcast-qual -Wcast-align
-# ALL_CFLAGS		+= -Wconversion -Wsign-conversion -Wjump-misses-init
-# ALL_CFLAGS		+= -Wno-multichar -Wpacked -Wstrict-overflow -Wvla
-# ALL_CFLAGS		+= -Wformat -Wno-format-zero-length -Wstrict-prototypes
-# ALL_CFLAGS		+= -Wno-unknown-warning-option
-
-# Preprocessor Flags
-ALL_CPPFLAGS	:= $(CPPFLAGS)
-
-# Linker Flags
-ALL_LDFLAGS		:= $(LDFLAGS)
-ALL_LDLIBS		:= -lc
-
-
-# Source, Binaries, Dependencies
-SRC			:= $(wildcard $(SRCDIR)/*.cc)
-OBJ			:= $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRC:.cc=.o))
-DEP			:= $(OBJ:.o=.d)
-BIN			:= $(BINDIR)/$(TARGET)
--include $(DEP)
+SRC			:= $(wildcard ./*.cc)
+OBJ			:= $(patsubst ./%,$(OBJDIR)/%,$(SRC:.cc=.o))
+HDR			:= $(wildcard ./*.h)
+TEST_SRC			:= $(wildcard ./tests/*.cc)
+TEST_OBJ			:= $(patsubst ./%,$(OBJDIR)/%,$(TEST_SRC:.cc=.o))
 
 # Verbosity Control, ala automake
 V 			= 1
@@ -71,34 +42,38 @@ RMDIR_0 	= @$(REAL_RMDIR)
 RMDIR_1 	= $(REAL_RMDIR)
 RMDIR 		= $(RMDIR_$(V))
 
-
-
 # Build Rules
 .PHONY: clean
 .DEFAULT_GOAL := all
 
-all: setup $(BIN)
+all: setup render_relativity tests
 setup: dir
 remake: clean all
 
+CREATE_DEPENDS:=$(shell ./create_dependencies.sh)
+-include .depend
+
+.PHONY: render_relativity
+render_relativity: $(BINDIR)/render_relativity
+.PHONY: tests
+tests: $(BINDIR)/tests_main
+
+$(BINDIR)/render_relativity: $(OBJDIR)/main.o $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OBJDIR)/perlin_noise.o $(OBJDIR)/object_registry.o $(OBJDIR)/world_constants.o
+	$(LD) $(LDFLAGS) $^ -o $@
+
+$(BINDIR)/tests_main: $(TEST_OBJ) $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OBJDIR)/perlin_noise.o $(OBJDIR)/object_registry.o $(OBJDIR)/world_constants.o
+	$(LD) $(LDFLAGS) $^ -o $@
+
 dir:
 	@mkdir -p $(OBJDIR)
+	@mkdir -p $(OBJDIR)/tests
 	@mkdir -p $(BINDIR)
 
-
-$(BIN): $(OBJ)
-	$(LD) $(ALL_LDFLAGS) $^ $(ALL_LDLIBS) -o $@
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.cc
-	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) -c -MMD -MP -o $@ $<
-
-
 clean:
-	$(RM) $(OBJ) $(DEP) $(BIN)
-	$(RMDIR) $(OBJDIR) $(BINDIR) 2> /dev/null; true
+	$(RM) $(OBJDIR) $(BINDIR)
 
-movie: $(BIN)
+movie: render_relativity
 	rm -f output/*
-	$(BIN)
+	./bin/render_relativity
 	python ./animation-generator.py
 	$(OPEN) output/movie.mp4
