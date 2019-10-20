@@ -15,3 +15,10 @@ do
   echo -e "\t\$(CC) \$(CPPFLAGS) \$< -o \$@" >> .depend
   echo >> .depend
 done
+
+for f in scenes/*.cc
+do
+  clang++ -std=c++17 -MM $f -MT obj/${f%.cc}.o >> .depend
+  echo -e "\t\$(CC) \$(CPPFLAGS) \$< -o \$@" >> .depend
+  echo >> .depend
+done

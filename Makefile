@@ -14,6 +14,8 @@ OBJ			:= $(patsubst ./%,$(OBJDIR)/%,$(SRC:.cc=.o))
 HDR			:= $(wildcard ./*.h)
 TEST_SRC			:= $(wildcard ./tests/*.cc)
 TEST_OBJ			:= $(patsubst ./%,$(OBJDIR)/%,$(TEST_SRC:.cc=.o))
+SCENE_SRC			:= $(wildcard ./scenes/*.cc)
+SCENE_OBJ			:= $(patsubst ./%,$(OBJDIR)/%,$(SCENE_SRC:.cc=.o))
 
 # Verbosity Control, ala automake
 V 			= 1
@@ -58,7 +60,7 @@ render_relativity: $(BINDIR)/render_relativity
 .PHONY: tests
 tests: $(BINDIR)/tests_main
 
-$(BINDIR)/render_relativity: $(OBJDIR)/main.o $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OBJDIR)/perlin_noise.o $(OBJDIR)/object_registry.o $(OBJDIR)/world_constants.o
+$(BINDIR)/render_relativity: $(OBJDIR)/main.o $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OBJDIR)/perlin_noise.o $(OBJDIR)/object_registry.o $(OBJDIR)/world_constants.o $(SCENE_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(BINDIR)/tests_main: $(TEST_OBJ) $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OBJDIR)/perlin_noise.o $(OBJDIR)/object_registry.o $(OBJDIR)/world_constants.o
@@ -67,6 +69,7 @@ $(BINDIR)/tests_main: $(TEST_OBJ) $(OBJDIR)/counters.o $(OBJDIR)/material.o $(OB
 dir:
 	@mkdir -p $(OBJDIR)
 	@mkdir -p $(OBJDIR)/tests
+	@mkdir -p $(OBJDIR)/scenes
 	@mkdir -p $(BINDIR)
 
 clean:

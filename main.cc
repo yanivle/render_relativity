@@ -17,9 +17,7 @@
 #include "rand_utils.h"
 #include "rendering_params.h"
 #include "renderer.h"
-#include "scenes/scene1.h"
-#include "scenes/stars1.h"
-#include "scenes/cube_scene.h"
+#include "scenes/scenes.h"
 #include "object_registry.h"
 #include "fft.h"
 #include "filters.h"
@@ -30,7 +28,8 @@
 #include "counters.h"
 
 std::atomic<int> global_y = 0;
-Scene scene;
+// Scene scene;
+scenes::Capsules scene;
 Renderer renderer(&scene);
 
 void progress_thread() {
@@ -76,9 +75,10 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  createScene1(&scene);
+  // createSpheresScene(&scene);
+  // createScene1(&scene);
   // createStarsScene(&scene);
-  // createCubeScene(&scene);
+  //createCubeScene(&scene);
 
   bool apply_post_processing = false;
   bool double_image_before_convolution = true;
