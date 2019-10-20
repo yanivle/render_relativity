@@ -74,12 +74,8 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  scene = scenes::GetScene("Capsules");
+  scene = scenes::GetScene("ChoppedCube");
   renderer.setScene(scene);
-  // createSpheresScene(&scene);
-  // createScene1(&scene);
-  // createStarsScene(&scene);
-  //createCubeScene(&scene);
 
   bool apply_post_processing = false;
   bool double_image_before_convolution = true;

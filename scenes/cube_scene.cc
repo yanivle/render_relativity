@@ -85,7 +85,7 @@ void addCheckeredWall(Scene* scene) {
 }
 
 ChoppedCube::ChoppedCube() {
-  setName("Cube");
+  setName("ChoppedCube");
   modifiable_rendering_params().reflection_depth = 1;
   addCube(this);
   addChoppedSphere(this);
