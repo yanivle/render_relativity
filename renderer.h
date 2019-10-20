@@ -1,128 +1,150 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "mat4.h"
-#include "vec3.h"
 #include "color.h"
-#include "scene.h"
 #include "counters.h"
+#include "mat4.h"
+#include "scene.h"
+#include "vec3.h"
+#include "ray.h"
 
 class Renderer {
-public:
-  Renderer() {}
-  Renderer(const Mat4& view_world_matrix) : view_world_matrix_(view_world_matrix) {}
+ public:
+  Renderer(const Scene* scene) : scene_(scene) {}
+  Renderer(const Mat4& view_world_matrix, const Scene* scene)
+      : view_world_matrix_(view_world_matrix), scene_(scene) {}
 
   const mat4& view_world_matrix() const { return view_world_matrix_; }
   mat4& modifiable_view_world_matrix() { return view_world_matrix_; }
 
-  Color shoot(Ray ray, const Scene& scene, int remaining_depth) const {
+  struct IlluminationParams {
+    vec3 intersection_point;
+    vec3 ray_direction;
+    vec3 normal;
+    Material material;
+    Color color_at_intersection;
+  };
+
+  Color illuminate(const IlluminationParams& p, int remaining_depth) const {
+      Color color;
+      if (p.material.ambient > 0) {
+        color += p.color_at_intersection * p.material.ambient;
+      }
+      if (p.material.diffuse > 0) {
+        color += diffuse(p);
+      }
+      if (p.material.reflect > 0) {
+        color += reflection(p, remaining_depth - 1);
+      }
+      return color;
+  }
+
+  Color shoot(Ray ray, int remaining_depth) const {
     SDFResult r;
     ray.origin = view_world_matrix_ * ray.origin;
     ray.direction = view_world_matrix_.rotate(ray.direction);
     int num_steps;
-    bool hit = march(ray, scene, &r, &num_steps);
-    if (scene.rendering_params().render_march_iterations) {
+    bool hit = march(ray, &r, &num_steps);
+    if (scene_->rendering_params().render_march_iterations) {
       return Palette::Veridis().color(double(num_steps) / 100);
     }
-    if(hit) {
-      Color ambient_color;
-      if (r.material.ambient > 0) {
-        ambient_color = r.material.color(ray.origin) * r.material.ambient;
-      }
-      Color diffuse_color;
-      if (r.material.diffuse > 0) {
-        diffuse_color = diffuse(ray.origin, r.material, scene, r.material.diffuse);
-      }
-      Color reflection_color;
-      if (r.material.reflect > 0) {
-        reflection_color = reflection(ray, scene, r.material, remaining_depth - 1);
-      }
-      Color color = ambient_color + diffuse_color + reflection_color * r.material.reflect;
-      return color;
+    if (hit) {
+      IlluminationParams p;
+      p.intersection_point = ray.origin;
+      p.material = r.material;
+      p.color_at_intersection = p.material.color(p.intersection_point);
+      p.normal = scene_->root()->normal(p.intersection_point);
+      p.ray_direction = ray.direction;
+      return illuminate(p, remaining_depth);
     } else {
       return colors::BLACK;
     }
   }
 
-private:
-  bool march(Ray& ray, const Scene& scene, SDFResult* res, int* num_steps) const {
+ private:
+  bool march(Ray& ray, SDFResult* res, int* num_steps) const {
     DEFINE_COUNTER(num_marching_steps);
-    for (*num_steps = 0; *num_steps < scene.rendering_params().max_marching_steps; ++(*num_steps)) {
+    for (*num_steps = 0;
+         *num_steps < scene_->rendering_params().max_marching_steps;
+         ++(*num_steps)) {
       COUNTER_INC(num_marching_steps);
-      *res = scene.root()->sdf(ray.origin);
-      if (res->dist < scene.rendering_params().epsilon) {
+      *res = scene_->root()->sdf(ray.origin);
+      if (res->dist < scene_->rendering_params().epsilon) {
         return true;
-      } else if (abs(res->dist) > scene.rendering_params().max_dist) {
+      } else if (abs(res->dist) > scene_->rendering_params().max_dist) {
         return false;
       }
-      if (!scene.rendering_params().use_gravity) {
+      if (!scene_->rendering_params().use_gravity) {
         ray.march(res->dist);
       } else {
-        ray.marchWithGravity(res->dist, scene.masses());
+        ray.marchWithGravity(res->dist, scene_->masses());
       }
     }
     return false;
   }
 
-  float shadow(Ray ray_to_light, const Scene& scene, float dist_to_light) const {
+  float shadow(Ray ray_to_light, float dist_to_light) const {
     float res = 1.0;
     const float k = 16;
-    for (float t = scene.rendering_params().epsilon * 100; t < dist_to_light;) {
-      SDFResult r = scene.root()->sdf(ray_to_light.origin + ray_to_light.direction * t);
-      if (r.dist < scene.rendering_params().epsilon) return 0.0;
+    for (float t = scene_->rendering_params().epsilon * 100;
+         t < dist_to_light;) {
+      SDFResult r =
+          scene_->root()->sdf(ray_to_light.origin + ray_to_light.direction * t);
+      if (r.dist < scene_->rendering_params().epsilon) return 0.0;
       res = fmin(res, k * r.dist / t);
       t += r.dist;
     }
     return res;
   }
 
-  Color diffuse(const vec3& v, const Material& material, const Scene& scene, float diffuse_factor) const {
-    vec3 normal = scene.root()->normal(v);
+  Color diffuse(const IlluminationParams& p) const {
     Color color;
     float total_factor = 0;
-    for (int i = 0; i < scene.lights().size(); ++i) {
+    for (int i = 0; i < scene_->lights().size(); ++i) {
       vec3 norm_to_light;
       float dist_to_light;
       float cos_alpha;
-      scene.lights()[i]->diffuse(v, normal, &norm_to_light, &dist_to_light, &cos_alpha);
+      scene_->lights()[i]->diffuse(p.intersection_point, p.normal, &norm_to_light, &dist_to_light,
+                                   &cos_alpha);
       float shade = 1.0;
-      if (scene.rendering_params().do_shading) {
-        shade = shadow(Ray(v, norm_to_light), scene, dist_to_light);
+      if (scene_->rendering_params().do_shading) {
+        shade = shadow(Ray(p.intersection_point, norm_to_light), dist_to_light);
       }
       float factor = cos_alpha * shade;
-      if (scene.rendering_params().light_decay) {
-        factor = factor * 50 / (dist_to_light * dist_to_light);
+      if (scene_->rendering_params().light_decay) {
+        factor *= 50 / (dist_to_light * dist_to_light);
       }
       if (factor < 0) factor = 0;
-      total_factor += factor * diffuse_factor;
+      total_factor += factor * p.material.diffuse;
     }
-    return material.color(v) * total_factor;
+    return p.material.color(p.intersection_point) * total_factor;
   }
 
-  Color reflection(Ray ray, const Scene& scene, const Material& mat, int remaining_depth) const {
+  Color reflection(const IlluminationParams& p, int remaining_depth) const {
     if (remaining_depth == 0) return colors::BLACK;
-    vec3 normal = scene.root()->normal(ray.origin);
-    ray.direction.ireflect(normal);
+    Ray reflected_ray(p.intersection_point,
+                      p.ray_direction.reflect(p.normal));
     int num_iters = 1;
-    if (mat.roughness > 0) {
-      num_iters = scene.rendering_params().roughness_iterations;
+    if (p.material.roughness > 0) {
+      num_iters = scene_->rendering_params().roughness_iterations;
     }
-    std::vector<Color> colors;
-    vec3 original_dir = ray.direction;
+    Color res;
+    vec3 original_dir = p.ray_direction;
     for (int i = 0; i < num_iters; ++i) {
-      if (mat.roughness > 0) {
+      if (p.material.roughness > 0) {
         // TODO: should the random() be replaced by a random orthonormal vec?
-        vec3 noise_vec = Vec3::random() * mat.roughness;
-        ray.direction = original_dir + noise_vec;
-        ray.direction.inormalize();
+        vec3 noise_vec = Vec3::random() * p.material.roughness;
+        reflected_ray.direction = original_dir + noise_vec;
+        reflected_ray.direction.inormalize();
       }
-      ray.march(scene.rendering_params().epsilon * 5);
-      colors.push_back(shoot(ray, scene, remaining_depth));
+      reflected_ray.march(scene_->rendering_params().epsilon * 5);
+      res += shoot(reflected_ray, remaining_depth);
     }
-    return Color::average(colors);
+    return res * p.material.reflect / num_iters;
   }
 
   Mat4 view_world_matrix_;
+  const Scene* scene_;
 };
 
 #endif

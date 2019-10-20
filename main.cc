@@ -30,8 +30,8 @@
 #include "counters.h"
 
 std::atomic<int> global_y = 0;
-Renderer renderer;
 Scene scene;
+Renderer renderer(&scene);
 
 void progress_thread() {
   Progress progress(scene.rendering_params().height);
@@ -47,22 +47,25 @@ DEFINE_COUNTER(rays);
 
 void render_thread(Image* image) {
   int y = global_y++;
-  while (y < scene.rendering_params().height) {
+  int width = scene.rendering_params().width;
+  int height = scene.rendering_params().height; 
+  int aa_factor = scene.rendering_params().aa_factor;
+  while (y < height) {
     // std::cout << "Rendering line: " << y << std::endl;
-    for (int x = 0; x < scene.rendering_params().width; ++x) {
-      std::vector<Color> colors;
-      for (int dx = 0; dx < scene.rendering_params().aa_factor; ++dx) {
-        for (int dy = 0; dy < scene.rendering_params().aa_factor; ++dy) {
-          float x_dir = interpolate(x * scene.rendering_params().aa_factor + dx, Range(0, scene.rendering_params().width * scene.rendering_params().aa_factor), Range(-1, 1));
-          float y_dir = interpolate(y * scene.rendering_params().aa_factor + dy, Range(0, scene.rendering_params().height * scene.rendering_params().aa_factor), Range(1, -1));
+    for (int x = 0; x < width; ++x) {
+      Color color;
+      for (int dx = 0; dx < aa_factor; ++dx) {
+        for (int dy = 0; dy < aa_factor; ++dy) {
+          float x_dir = interpolate(x * aa_factor + dx, Range(0, width * aa_factor), Range(-1, 1));
+          float y_dir = interpolate(y * aa_factor + dy, Range(0, height * aa_factor), Range(1, -1));
           float z_dir = scene.rendering_params().screen_z;
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
           COUNTER_INC(rays);
 
-          colors.push_back(renderer.shoot(ray, scene, scene.rendering_params().reflection_depth));
+          color += renderer.shoot(ray, scene.rendering_params().reflection_depth);
         }
       }
-      (*image)(x, y) = Color::average(colors);
+      (*image)(x, y) = color / (aa_factor * aa_factor);
     }
     y = global_y++;
   }
@@ -73,11 +76,11 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  // createScene1(&scene);
-  createStarsScene(&scene);
+  createScene1(&scene);
+  // createStarsScene(&scene);
   // createCubeScene(&scene);
 
-  bool apply_post_processing = true;
+  bool apply_post_processing = false;
   bool double_image_before_convolution = true;
   bool save_snapshot = true;
   bool resume_from_snapshot = false;
