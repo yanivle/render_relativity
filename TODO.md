@@ -1,5 +1,5 @@
 # General cleanups
-* Move scenes to cc files so they compile quickly
+* add CLI Flag class to set all options
 * fix plane reflection bug
 * Add animator object
 * Add more c files?
