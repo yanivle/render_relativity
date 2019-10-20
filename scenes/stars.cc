@@ -7,6 +7,8 @@
 
 namespace scenes {
 
+DEFINE_SCENE(Stars);
+
 Sphere* createStar() {
   Color color = colors::WHITE;
   switch (rand() % 50) {

@@ -10,9 +10,14 @@
 
 class Renderer {
  public:
+  Renderer() {}
   Renderer(const Scene* scene) : scene_(scene) {}
   Renderer(const Mat4& view_world_matrix, const Scene* scene)
       : view_world_matrix_(view_world_matrix), scene_(scene) {}
+
+  void setScene(Scene* scene) {
+    scene_ = scene;
+  }
 
   const mat4& view_world_matrix() const { return view_world_matrix_; }
   mat4& modifiable_view_world_matrix() { return view_world_matrix_; }
@@ -151,7 +156,7 @@ class Renderer {
   }
 
   Mat4 view_world_matrix_;
-  const Scene* scene_;
+  const Scene* scene_ = 0;
 };
 
 #endif

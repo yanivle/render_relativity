@@ -2,6 +2,8 @@
 
 namespace scenes {
 
+DEFINE_SCENE(Spheres);
+
 Spheres::Spheres() {
   setName("Spheres");
   SDF* s1 = new Sphere(vec3(-4.0, 1.0, 20), 2.5, Material(colors::RED  , 0., 0.45, 0.5, 0.0, 1.0, 200));

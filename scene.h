@@ -11,7 +11,6 @@
 class Scene {
 public:
   Scene() {
-    std::cerr << "Creating new scene" << std::endl;
     root_sdf = new MultiUnion();
   }
 

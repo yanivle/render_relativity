@@ -28,13 +28,12 @@
 #include "counters.h"
 
 std::atomic<int> global_y = 0;
-// Scene scene;
-scenes::Capsules scene;
-Renderer renderer(&scene);
+Scene* scene = 0;
+Renderer renderer;
 
 void progress_thread() {
-  Progress progress(scene.rendering_params().height);
-  while (global_y < scene.rendering_params().height) {
+  Progress progress(scene->rendering_params().height);
+  while (global_y < scene->rendering_params().height) {
     progress.update(global_y);
     usleep(1000 * 100);
   }
@@ -46,9 +45,9 @@ DEFINE_COUNTER(rays);
 
 void render_thread(Image* image) {
   int y = global_y++;
-  int width = scene.rendering_params().width;
-  int height = scene.rendering_params().height; 
-  int aa_factor = scene.rendering_params().aa_factor;
+  int width = scene->rendering_params().width;
+  int height = scene->rendering_params().height; 
+  int aa_factor = scene->rendering_params().aa_factor;
   while (y < height) {
     // std::cout << "Rendering line: " << y << std::endl;
     for (int x = 0; x < width; ++x) {
@@ -57,11 +56,11 @@ void render_thread(Image* image) {
         for (int dy = 0; dy < aa_factor; ++dy) {
           float x_dir = interpolate(x * aa_factor + dx, Range(0, width * aa_factor), Range(-1, 1));
           float y_dir = interpolate(y * aa_factor + dy, Range(0, height * aa_factor), Range(1, -1));
-          float z_dir = scene.rendering_params().screen_z;
+          float z_dir = scene->rendering_params().screen_z;
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
           COUNTER_INC(rays);
 
-          color += renderer.shoot(ray, scene.rendering_params().reflection_depth);
+          color += renderer.shoot(ray, scene->rendering_params().reflection_depth);
         }
       }
       (*image)(x, y) = color / (aa_factor * aa_factor);
@@ -75,6 +74,8 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
+  scene = scenes::GetScene("Capsules");
+  renderer.setScene(scene);
   // createSpheresScene(&scene);
   // createScene1(&scene);
   // createStarsScene(&scene);
@@ -85,36 +86,36 @@ int main(void) {
   bool save_snapshot = true;
   bool resume_from_snapshot = false;
 
-  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos,
-                                            scene.rendering_params().camera_settings.target,
-                                            scene.rendering_params().camera_settings.up);
+  renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene->rendering_params().camera_settings.eye_pos,
+                                            scene->rendering_params().camera_settings.target,
+                                            scene->rendering_params().camera_settings.up);
 
   std::cout << "Total SDFs: " << registry::registry.numObjects() << std::endl;
-  std::cout << "Total lights: " << scene.lights().size() << std::endl;
-  std::cout << "Total masses: " << scene.masses().size() << std::endl;
+  std::cout << "Total lights: " << scene->lights().size() << std::endl;
+  std::cout << "Total masses: " << scene->masses().size() << std::endl;
 
-  std::cout << "Resolution: " << scene.rendering_params().width << 'x'
-                              << scene.rendering_params().height << std::endl;
+  std::cout << "Resolution: " << scene->rendering_params().width << 'x'
+                              << scene->rendering_params().height << std::endl;
 
-  Image img(scene.rendering_params().width, scene.rendering_params().height);
+  Image img(scene->rendering_params().width, scene->rendering_params().height);
 
-  for (int frame = 0; frame < scene.rendering_params().animation_params.frames; ++frame) {
+  for (int frame = 0; frame < scene->rendering_params().animation_params.frames; ++frame) {
     if (resume_from_snapshot) {
       img.deserialize(counter_filename("output/render", frame, ".img"));
     } else {
-      // float animation_fraction = float(frame) / scene.rendering_params().animation_params.frames;
+      // float animation_fraction = float(frame) / scene->rendering_params().animation_params.frames;
       // vec3 eye_movement = vec3(100 * sin(-1 + M_PI * animation_fraction), 0, -100 * cos(-1 + M_PI * animation_fraction) + 100);
       vec3 eye_movement;
-      renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene.rendering_params().camera_settings.eye_pos + eye_movement,
-                                                scene.rendering_params().camera_settings.target,
-                                                scene.rendering_params().camera_settings.up);
+      renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene->rendering_params().camera_settings.eye_pos + eye_movement,
+                                                scene->rendering_params().camera_settings.target,
+                                                scene->rendering_params().camera_settings.up);
 
       // *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
       // *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
       global_y = 0;
       const int num_threads = std::thread::hardware_concurrency();
       std::cout << "Rendering frame " << frame << "/"
-                << scene.rendering_params().animation_params.frames << " with "
+                << scene->rendering_params().animation_params.frames << " with "
                 << num_threads << " threads..." << std::endl;
       std::vector<std::thread> threads;
       for (int i = 0; i < num_threads; ++i) {
@@ -134,15 +135,15 @@ int main(void) {
       std::cout << "Applying post processing effects..." << std::endl;
       if (double_image_before_convolution) {
         img = img.resize(img.width() * 2, img.height() * 2);
-        filters::Convolve(img, filters::Bloom(scene.rendering_params().width * 2, scene.rendering_params().height * 2));
+        filters::Convolve(img, filters::Bloom(scene->rendering_params().width * 2, scene->rendering_params().height * 2));
         img = img.resize(img.width() / 2, img.height() / 2);
       } else {
-        filters::Convolve(img, filters::Bloom(scene.rendering_params().width, scene.rendering_params().height));
+        filters::Convolve(img, filters::Bloom(scene->rendering_params().width, scene->rendering_params().height));
       }
     }
     img.save(counter_filename("output/output", frame, ".ppm").c_str());
 
-    world_constants::time += scene.rendering_params().animation_params.time_delta;
+    world_constants::time += scene->rendering_params().animation_params.time_delta;
 
     std::cout << COUNTERS_STR() << std::endl;
   }

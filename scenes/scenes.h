@@ -1,15 +1,23 @@
 #include "../scene.h"
 
-#define DEFINE_SCENE(name) class name : public Scene {\
- public:\
-  name();\
-};
+#include <string>
+
+#define DEFINE_SCENE(name)    \
+  class name : public Scene { \
+   public:                    \
+    name();                   \
+  };                          \
+  static SceneRegisterer<name> registerer;
 
 namespace scenes {
 
-DEFINE_SCENE(Spheres);
-DEFINE_SCENE(Capsules);
-DEFINE_SCENE(ChoppedCube);
-DEFINE_SCENE(Stars);
+void RegisterScene(Scene* scene);
+Scene* GetScene(const std::string& name);
+
+template <class SceneClass>
+class SceneRegisterer {
+ public:
+  SceneRegisterer() { RegisterScene(new SceneClass); }
+};
 
 }  // namespace scenes

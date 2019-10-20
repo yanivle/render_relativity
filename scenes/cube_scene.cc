@@ -2,6 +2,9 @@
 
 namespace scenes {
 
+DEFINE_SCENE(ChoppedCube);
+
+
 SDF* createCube(Scene* scene, const Color& color = colors::RED) {
   Material material(color, 0, 0.5, 0.05, 0.0, 1.0, 10000);
   std::vector<vec3> normals = {
