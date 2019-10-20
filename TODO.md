@@ -1,4 +1,6 @@
 # General cleanups
+* Move scenes to cc files so they compile quickly
+* fix plane reflection bug
 * Add animator object
 * Add more c files?
 * Add option to control rendering_params from the CLI

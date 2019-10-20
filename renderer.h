@@ -23,6 +23,7 @@ class Renderer {
     vec3 normal;
     Material material;
     Color color_at_intersection;
+    vec3 to_eye;
   };
 
   Color illuminate(const IlluminationParams& p, int remaining_depth) const {
@@ -34,7 +35,7 @@ class Renderer {
         color += diffuse(p);
       }
       if (p.material.reflect > 0) {
-        color += reflection(p, remaining_depth - 1);
+        color += reflection(p, remaining_depth);
       }
       return color;
   }
@@ -55,6 +56,9 @@ class Renderer {
       p.color_at_intersection = p.material.color(p.intersection_point);
       p.normal = scene_->root()->normal(p.intersection_point);
       p.ray_direction = ray.direction;
+      // vec3 eye = view_world_matrix_ * scene_->rendering_params().camera_settings.eye_pos;
+      vec3 eye = scene_->rendering_params().camera_settings.eye_pos;
+      p.to_eye = (eye - p.intersection_point).normalize();
       return illuminate(p, remaining_depth);
     } else {
       return colors::BLACK;
@@ -99,7 +103,6 @@ class Renderer {
 
   Color diffuse(const IlluminationParams& p) const {
     Color color;
-    float total_factor = 0;
     for (int i = 0; i < scene_->lights().size(); ++i) {
       vec3 norm_to_light;
       float dist_to_light;
@@ -110,14 +113,18 @@ class Renderer {
       if (scene_->rendering_params().do_shading) {
         shade = shadow(Ray(p.intersection_point, norm_to_light), dist_to_light);
       }
-      float factor = cos_alpha * shade;
-      if (scene_->rendering_params().light_decay) {
-        factor *= 50 / (dist_to_light * dist_to_light);
-      }
-      if (factor < 0) factor = 0;
-      total_factor += factor * p.material.diffuse;
+      float factor = std::max(0.0f, cos_alpha * shade);
+      // if (scene_->rendering_params().light_decay) {
+      //   factor *= 50 / (dist_to_light * dist_to_light);
+      // }
+      color += p.color_at_intersection * factor * p.material.diffuse;
+      // TODO: can add light color here
+      vec3 h = (p.to_eye + norm_to_light).normalize();
+      factor = std::powf(std::max(0.0f, p.normal.dot(h)), p.material.shininess);
+      // TODO: and add light color here too
+      color += colors::WHITE * p.material.specular * factor;
     }
-    return p.material.color(p.intersection_point) * total_factor;
+    return color;
   }
 
   Color reflection(const IlluminationParams& p, int remaining_depth) const {
@@ -129,7 +136,7 @@ class Renderer {
       num_iters = scene_->rendering_params().roughness_iterations;
     }
     Color res;
-    vec3 original_dir = p.ray_direction;
+    vec3 original_dir = reflected_ray.direction;
     for (int i = 0; i < num_iters; ++i) {
       if (p.material.roughness > 0) {
         // TODO: should the random() be replaced by a random orthonormal vec?
@@ -138,7 +145,7 @@ class Renderer {
         reflected_ray.direction.inormalize();
       }
       reflected_ray.march(scene_->rendering_params().epsilon * 5);
-      res += shoot(reflected_ray, remaining_depth);
+      res += shoot(reflected_ray, remaining_depth - 1);
     }
     return res * p.material.reflect / num_iters;
   }
