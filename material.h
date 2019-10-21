@@ -11,11 +11,11 @@ struct Material {
   Material() {}
 
   Material(const Colorizer* colorizer, float ambient=0.1, float diffuse=1.0, float reflect=0.5, float roughness=0, float specular=0, float shininess=0)
-  : color_(colors::PURPLE), colorizer(colorizer), ambient(ambient), diffuse(diffuse), reflect(reflect), roughness(roughness), specular(specular), shininess(shininess) {
+  : color_(colors::PURPLE), colorizer(colorizer), ambient(ambient), diffuse(diffuse), reflect(reflect), specular(specular), shininess(shininess), roughness(roughness) {
   }
 
   Material(const Color& color, float ambient=0.1, float diffuse=1.0, float reflect=0.5, float roughness=0, float specular=0, float shininess=0)
-  : color_(color), colorizer(0), ambient(ambient), diffuse(diffuse), reflect(reflect), roughness(roughness), specular(specular), shininess(shininess) {
+  : color_(color), colorizer(0), ambient(ambient), diffuse(diffuse), reflect(reflect), specular(specular), shininess(shininess), roughness(roughness) {
   }
 
   ~Material();

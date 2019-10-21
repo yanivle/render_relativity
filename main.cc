@@ -23,7 +23,6 @@
 #include "filters.h"
 #include <thread>
 #include <unistd.h>
-#include "world_constants.h"
 #include <atomic>
 #include "counters.h"
 
@@ -74,7 +73,7 @@ std::string counter_filename(std::string basename, int count, std::string suffix
 }
 
 int main(void) {
-  scene = scenes::GetScene("ChoppedCube");
+  scene = scenes::GetScene("Spheres");
   renderer.setScene(scene);
 
   bool apply_post_processing = false;
@@ -105,9 +104,6 @@ int main(void) {
       renderer.modifiable_view_world_matrix() = Mat4::view_to_world(scene->rendering_params().camera_settings.eye_pos + eye_movement,
                                                 scene->rendering_params().camera_settings.target,
                                                 scene->rendering_params().camera_settings.up);
-
-      // *(world_constants::values["blackhole_mass"]) = 5 * animation_fraction;
-      // *(world_constants::values["blackhole_radius"]) = 7 * animation_fraction;
       global_y = 0;
       const int num_threads = std::thread::hardware_concurrency();
       std::cout << "Rendering frame " << frame << "/"
@@ -138,8 +134,6 @@ int main(void) {
       }
     }
     img.save(counter_filename("output/output", frame, ".ppm").c_str());
-
-    world_constants::time += scene->rendering_params().animation_params.time_delta;
 
     std::cout << COUNTERS_STR() << std::endl;
   }
