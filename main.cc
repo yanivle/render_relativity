@@ -63,6 +63,8 @@ void render_thread(Image* image) {
           Ray ray(vec3(), vec3(x_dir, y_dir, z_dir).normalize());
           COUNTER_INC(rays);
 
+          ray.origin = renderer.view_world_matrix() * ray.origin;
+          ray.direction = renderer.view_world_matrix().rotate(ray.direction);
           color += renderer.shoot(ray, scene->rendering_params().reflection_depth);
         }
       }

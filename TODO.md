@@ -1,6 +1,5 @@
 # General cleanups
 * add CLI Flag class to set all options
-* fix plane reflection bug
 * Add animator object
 * Add more c files?
 * Add option to control rendering_params from the CLI
@@ -17,9 +16,9 @@
 * Consider optimizing the return value from sdf() (e.g. make it into an argument, but remember * can't make this into SDF* and dist, as some materials are created as part of the sdf e.g. in smoothing)
 
 # Features
+* Add colors to light sources
 * Simulate moving scenes (and consider lorentz transformations)
 * Simulate scattering
-* Add colors to light sources
 * Add progress bar for post processing
 * Add progress bar for frames when rendering animations
 * Add rotation sdf

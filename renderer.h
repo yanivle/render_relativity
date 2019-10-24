@@ -47,8 +47,6 @@ class Renderer {
 
   Color shoot(Ray ray, int remaining_depth) const {
     SDFResult r;
-    ray.origin = view_world_matrix_ * ray.origin;
-    ray.direction = view_world_matrix_.rotate(ray.direction);
     int num_steps;
     bool hit = march(ray, &r, &num_steps);
     if (scene_->rendering_params().render_march_iterations) {
