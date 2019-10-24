@@ -25,6 +25,10 @@
 #include <unistd.h>
 #include <atomic>
 #include "counters.h"
+#include "absl/flags/flag.h"
+#include "absl/flags/parse.h"
+
+ABSL_FLAG(std::string, scene, "Spheres", "name of scene to load");
 
 std::atomic<int> global_y = 0;
 Scene* scene = 0;
@@ -72,8 +76,9 @@ std::string counter_filename(std::string basename, int count, std::string suffix
   return basename + std::to_string(count) + suffix;
 }
 
-int main(void) {
-  scene = scenes::GetScene("Spheres");
+int main(int argc, char **argv) {
+  absl::ParseCommandLine(argc, argv);
+  scene = scenes::GetScene(absl::GetFlag(FLAGS_scene));
   renderer.setScene(scene);
 
   bool apply_post_processing = false;
