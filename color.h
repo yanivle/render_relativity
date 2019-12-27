@@ -53,6 +53,16 @@ struct Color {
     return Color(r + other.r, g + other.g, b + other.b);
   }
 
+  void operator-= (const Color& other) {
+    r -= other.r;
+    g -= other.g;
+    b -= other.b;
+  }
+
+  Color operator- (const Color& other) const {
+    return Color(r - other.r, g - other.g, b - other.b);
+  }
+
   bool operator== (const Color& other) const {
     return r == other.r && g == other.g && b == other.b;
   }

@@ -2,27 +2,27 @@
 #define ARRAY2D_H
 
 #include <cstring>
-#include <valarray>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <valarray>
 
 #include "array_view.h"
 
 template <class value_type>
 class Array2D {
-public:
-
-  template<class> friend class Array2D;
+ public:
+  template <class>
+  friend class Array2D;
 
   // Ctors.
-  Array2D(size_t width, size_t height) :
-    width_(width), height_(height), size_(width * height) {
+  Array2D(size_t width, size_t height)
+      : width_(width), height_(height), size_(width * height) {
     data_ = new value_type[size_]();
   }
 
   template <class other_value_type>
-  Array2D(const Array2D<other_value_type>& other) :
-    width_(other.width()), height_(other.height()), size_(other.size()) {
+  Array2D(const Array2D<other_value_type>& other)
+      : width_(other.width()), height_(other.height()), size_(other.size()) {
     data_ = new value_type[size_];
     for (int i = 0; i < size_; ++i) {
       data_[i] = other.data_[i];
@@ -30,7 +30,8 @@ public:
   }
 
   template <class other_value_type>
-  Array2D<other_value_type> transform(const std::function<other_value_type(value_type)>& f) {
+  Array2D<other_value_type> transform(
+      const std::function<other_value_type(value_type)>& f) {
     Array2D<other_value_type> res(width(), height());
     for (int i = 0; i < size_; ++i) {
       res.data_[i] = f(data_[i]);
@@ -45,7 +46,8 @@ public:
     data_ = new value_type[size_];
     int i = 0;
     for (const auto& l : lst) {
-      CHECK(l.size() == width_) << "Initializing Array2D from inconsistent initializer_list.";
+      CHECK(l.size() == width_)
+          << "Initializing Array2D from inconsistent initializer_list.";
       for (const auto& v : l) {
         data_[i] = v;
         i++;
@@ -53,17 +55,15 @@ public:
     }
   }
 
-  Array2D(const Array2D<value_type>& other) :
-    width_(other.width()), height_(other.height()), size_(other.size()) {
+  Array2D(const Array2D<value_type>& other)
+      : width_(other.width()), height_(other.height()), size_(other.size()) {
     data_ = new value_type[size_];
     for (int i = 0; i < size_; ++i) {
       data_[i] = other.data_[i];
     }
   }
 
-  Array2D(Array2D<value_type>&& other) {
-    *this = std::move(other);
-  }
+  Array2D(Array2D<value_type>&& other) { *this = std::move(other); }
 
   Array2D& operator=(Array2D&& other) {
     if (this != &other) {
@@ -75,9 +75,7 @@ public:
     return *this;
   }
 
-  ~Array2D() {
-    delete[] data_;
-  }
+  ~Array2D() { delete[] data_; }
 
   // Comparison.
   bool operator==(const Array2D& other) const {
@@ -92,23 +90,16 @@ public:
     return true;
   }
 
-
   // Indexed access.
-  value_type& operator()(int x, int y) {
-    return data_[index(x, y)];
-  }
+  value_type& operator()(int x, int y) { return data_[index(x, y)]; }
 
   const value_type& operator()(int x, int y) const {
     return data_[index(x, y)];
   }
 
-  value_type& operator()(int i) {
-    return data_[i];
-  }
+  value_type& operator()(int i) { return data_[i]; }
 
-  const value_type& operator()(int i) const {
-    return data_[i];
-  }
+  const value_type& operator()(int i) const { return data_[i]; }
 
   value_type& at(int x, int y) {
     CHECK(is_safe(x, y)) << "unsafe access - x: " << x << " y: " << y;
@@ -151,8 +142,8 @@ public:
     Array2D<value_type> res(width(), height());
     for (int y = 0; y < height(); ++y) {
       for (int x = 0; x < width(); ++x) {
-        res(x, y) = (*this)((x + x_rotation) % width(),
-                            (y + y_rotation) % height());
+        res(x, y) =
+            (*this)((x + x_rotation) % width(), (y + y_rotation) % height());
       }
     }
     return res;
@@ -172,16 +163,17 @@ public:
   }
 
   // Debugging.
-  void print(int cell_width=4, int precision=2) const {
+  void print(int cell_width = 4, int precision = 2) const {
     for (int y = 0; y < height_; ++y) {
-        for (int x = 0; x < width_; ++x) {
-            std::cout << std::fixed << std::setprecision(precision) << std::setw(cell_width) << (*this)(x, y) << " ";
-        }
-        std::cout << std::endl;
+      for (int x = 0; x < width_; ++x) {
+        std::cout << std::fixed << std::setprecision(precision)
+                  << std::setw(cell_width) << (*this)(x, y) << " ";
+      }
+      std::cout << std::endl;
     }
   }
 
-  std::string str(const int max_dim=3) const {
+  std::string str(const int max_dim = 3) const {
     std::ostringstream ss;
     ss << std::fixed << std::setprecision(2);
     ss << "Array2D(" << std::endl;
@@ -226,19 +218,19 @@ public:
   }
 
   // Scalar operations.
-  void operator *= (value_type a) {
+  void operator*=(value_type a) {
     for (int i = 0; i < size(); ++i) {
       data_[i] *= a;
     }
   }
 
-  void operator *= (const Array2D<value_type>& other) {
+  void operator*=(const Array2D<value_type>& other) {
     for (int i = 0; i < size(); ++i) {
       data_[i] *= other.data_[i];
     }
   }
 
-  void operator /= (value_type a) {
+  void operator/=(value_type a) {
     for (int i = 0; i < size(); ++i) {
       data_[i] /= a;
     }
@@ -257,43 +249,42 @@ public:
     return *std::min_element(flat.cbegin(), flat.cend());
   }
 
-  void operator += (const Array2D<value_type>& other) {
+  value_type max() const {
+    const auto flat = flatten();
+    return *std::max_element(flat.cbegin(), flat.cend());
+  }
+
+  void operator+=(const Array2D<value_type>& other) {
     for (int i = 0; i < size(); ++i) {
       data_[i] += other.data_[i];
     }
   }
 
-  void inormalize() {
-    (*this) /= sum();
-  }
+  void inormalize() { (*this) /= sum(); }
 
   void iaverage(const Array2D<value_type>& other) {
     (*this) += other;
     (*this) /= 2;
   }
 
-protected:
-  inline int index(int x, int y) const {
-    return (y * width_) + x;
-  }
+ protected:
+  inline int index(int x, int y) const { return (y * width_) + x; }
 
   bool is_safe(int x, int y) const {
     return x >= 0 && x < width_ && y >= 0 && y < height_;
   }
 
-  bool is_safe(int i) const {
-    return i >= 0 && i < size_;
-  }
+  bool is_safe(int i) const { return i >= 0 && i < size_; }
 
   size_t width_ = 0;
   size_t height_ = 0;
   size_t size_ = 0;
-  value_type *data_ = 0;
+  value_type* data_ = 0;
 };
 
 template <class value_type>
-std::ostream &operator<<(std::ostream &os, Array2D<value_type> const &arr) {
-    return os << arr.str();
+std::ostream& operator<<(std::ostream& os, Array2D<value_type> const& arr) {
+  return os << arr.str();
 }
 
 #endif

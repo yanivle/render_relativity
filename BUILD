@@ -87,8 +87,8 @@ cc_binary(
     deps = [
         ":base_hdrs",
         ":counters",
-        ":object_registry",
         ":material",
+        ":object_registry",
     ],
 )
 
@@ -105,6 +105,32 @@ cc_binary(
         ":perlin_noise",
         ":scene",
         "//scenes",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)
+
+cc_binary(
+    name = "sierpinski",
+    srcs = [
+        "sierpinski.cc",
+    ],
+    deps = [
+        ":base_hdrs",
+        ":counters",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)
+
+cc_binary(
+    name = "hough",
+    srcs = [
+        "hough.cc",
+    ],
+    deps = [
+        ":base_hdrs",
+        ":counters",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
     ],
