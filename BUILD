@@ -135,3 +135,16 @@ cc_binary(
         "@com_google_absl//absl/flags:parse",
     ],
 )
+
+cc_binary(
+    name = "unit_circles",
+    srcs = [
+        "unit_circles.cc",
+    ],
+    deps = [
+        ":base_hdrs",
+        ":counters",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)

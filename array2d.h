@@ -75,6 +75,13 @@ class Array2D {
     return *this;
   }
 
+  Array2D& fill(const value_type& v) {
+    std::fill_n(data_, size_, value_type{});
+    return *this;
+  }
+  Array2D& operator=(const value_type& v) { return fill(v); }
+  Array2D& clear() { return fill(value_type{}); }
+
   ~Array2D() { delete[] data_; }
 
   // Comparison.
