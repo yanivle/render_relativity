@@ -8,6 +8,11 @@
 
 #include "array_view.h"
 
+struct Shape {
+  Shape(size_t width, size_t height) : width_(width), height_(height) {}
+  size_t width_, height_;
+};
+
 template <class value_type>
 class Array2D {
  public:
@@ -19,6 +24,8 @@ class Array2D {
       : width_(width), height_(height), size_(width * height) {
     data_ = new value_type[size_]();
   }
+
+  Array2D(const Shape& shape) : Array2D(shape.width_, shape.height_) {}
 
   template <class other_value_type>
   Array2D(const Array2D<other_value_type>& other)
@@ -84,6 +91,22 @@ class Array2D {
 
   ~Array2D() { delete[] data_; }
 
+  Shape shape() const { return Shape(width_, height_); }
+
+  void blit(const Array2D& other, int x, int y) {
+    CHECK(width_ >= other.width_ + x)
+        << "Width " << width_ << " isn't >= other.width " << other.width_
+        << " + x " << x;
+    CHECK(height_ >= other.height_ + y)
+        << "Height " << height_ << " isn't >= other.height " << other.height_
+        << " + y " << y;
+    for (int yi = 0; yi < other.height_; ++yi) {
+      for (int xi = 0; xi < other.width_; ++xi) {
+        (*this)(x + xi, y + yi) = other(xi, yi);
+      }
+    }
+  }
+
   // Comparison.
   bool operator==(const Array2D& other) const {
     if (width_ != other.width_ || height_ != other.height_) {
@@ -137,6 +160,14 @@ class Array2D {
     return ArrayView<value_type>(data_ + index(i, 0), height_, width_);
   }
 
+  // Both col and column work.
+  ArrayView<value_type> col(int i) const { return column(i); }
+
+  ArrayView<value_type> first_row() const { return row(0); }
+  ArrayView<value_type> last_row() const { return row(height_ - 1); }
+  ArrayView<value_type> first_col() const { return col(0); }
+  ArrayView<value_type> last_col() const { return col(width_ - 1); }
+
   ArrayView<value_type> flatten() const {
     return ArrayView<value_type>(data_, size_, 1);
   }
@@ -151,6 +182,16 @@ class Array2D {
       for (int x = 0; x < width(); ++x) {
         res(x, y) =
             (*this)((x + x_rotation) % width(), (y + y_rotation) % height());
+      }
+    }
+    return res;
+  }
+
+  Array2D<value_type> transpose() const {
+    Array2D<value_type> res(height(), width());
+    for (int y = 0; y < height(); ++y) {
+      for (int x = 0; x < width(); ++x) {
+        res(y, x) = (*this)(x, y);
       }
     }
     return res;
@@ -225,10 +266,17 @@ class Array2D {
   }
 
   // Scalar operations.
-  void operator*=(value_type a) {
+  template <class multiplier_type>
+  void operator*=(multiplier_type a) {
     for (int i = 0; i < size(); ++i) {
       data_[i] *= a;
     }
+  }
+  template <class multiplier_type>
+  Array2D<value_type> operator*(multiplier_type a) {
+    Array2D<value_type> res = *this;
+    res *= a;
+    return res;
   }
 
   void operator*=(const Array2D<value_type>& other) {
@@ -237,10 +285,17 @@ class Array2D {
     }
   }
 
-  void operator/=(value_type a) {
+  template <class divisor>
+  void operator/=(divisor a) {
     for (int i = 0; i < size(); ++i) {
       data_[i] /= a;
     }
+  }
+  template <class divisor>
+  Array2D<value_type> operator/(divisor a) {
+    Array2D<value_type> res = *this;
+    res /= a;
+    return res;
   }
 
   value_type sum() const {
@@ -267,6 +322,12 @@ class Array2D {
     }
   }
 
+  Array2D<value_type> operator+(const Array2D<value_type>& other) const {
+    Array2D<value_type> res = *this;
+    res += other;
+    return res;
+  }
+
   void inormalize() { (*this) /= sum(); }
 
   void iaverage(const Array2D<value_type>& other) {
@@ -274,14 +335,14 @@ class Array2D {
     (*this) /= 2;
   }
 
- protected:
-  inline int index(int x, int y) const { return (y * width_) + x; }
-
   bool is_safe(int x, int y) const {
     return x >= 0 && x < width_ && y >= 0 && y < height_;
   }
 
   bool is_safe(int i) const { return i >= 0 && i < size_; }
+
+ protected:
+  inline int index(int x, int y) const { return (y * width_) + x; }
 
   size_t width_ = 0;
   size_t height_ = 0;

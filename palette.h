@@ -6,7 +6,7 @@
 #include "rgb.h"
 
 class Palette {
-public:
+ public:
   Palette() {}
 
   Palette(const Color& color1, const Color& color2) {
@@ -18,7 +18,7 @@ public:
     double index = 0.0;
     double step = 1.0 / (colors.size() - 1);
     for (auto c = colors.begin(); c != colors.end(); ++c) {
-      addKey(Key(index , *c));
+      addKey(Key(index, *c));
       index += step;
     }
   }
@@ -29,9 +29,7 @@ public:
     Color color;
   };
 
-  void addKey(const Key& key) {
-    keys.push_back(key);
-  }
+  void addKey(const Key& key) { keys.push_back(key); }
 
   Color color(double val) const {
     for (int i = 0; i < keys.size(); ++i) {
@@ -54,6 +52,19 @@ public:
     p.addKey(Key(1. / 3, Color(1, 0, 0)));
     p.addKey(Key(2. / 3, Color(1, 1, 0)));
     p.addKey(Key(1.0, Color(1, 1, 1)));
+    return p;
+  }
+
+  static Palette Rainbow() {
+    Palette p;
+    p.addKey(Key(0. / 6, Color(0x9400d3)));
+    p.addKey(Key(1. / 6, Color(0x4b0082)));
+    p.addKey(Key(2. / 6, Color(0x0000ff)));
+    p.addKey(Key(3. / 6, Color(0x00ff00)));
+    p.addKey(Key(4. / 6, Color(0xffff00)));
+    p.addKey(Key(5. / 6, Color(0xff7f00)));
+    p.addKey(Key(6. / 6, Color(0xff0000)));
+    p.addKey(Key(7. / 6, Color(0xffffff)));
     return p;
   }
 
@@ -318,7 +329,7 @@ public:
     return p;
   }
 
-private:
+ private:
   std::vector<Key> keys;
 };
 

@@ -6,6 +6,7 @@
 #include "fft.h"
 #include "logging.h"
 #include "math.h"
+#include "palette.h"
 #include "rgb.h"
 
 class Image : public Array2D<Color> {
@@ -88,6 +89,16 @@ class Image : public Array2D<Color> {
       (void)fwrite(&rgb, 1, 3, fp);
     }
     (void)fclose(fp);
+  }
+
+  static Image fromFloatArray(const Array2D<float>& arr,
+                              const Palette& palette = Palette::RedHot()) {
+    float max = arr.max();
+    Image image(arr.width(), arr.height());
+    for (int i = 0; i < arr.size(); ++i) {
+      image(i) = palette.color(arr(i) / max);
+    }
+    return image;
   }
 
   static Image load(const std::string& s) { return load(s.c_str()); }
