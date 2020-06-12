@@ -148,3 +148,29 @@ cc_binary(
         "@com_google_absl//absl/flags:parse",
     ],
 )
+
+cc_binary(
+    name = "seam_carving",
+    srcs = [
+        "seam_carving.cc",
+    ],
+    deps = [
+        ":base_hdrs",
+        ":counters",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)
+
+cc_binary(
+    name = "language_evolution",
+    srcs = [
+        "language_evolution.cc",
+    ],
+    deps = [
+        ":base_hdrs",
+        ":counters",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+    ],
+)

@@ -2,6 +2,7 @@
 #define VEC3_H
 
 #include <math.h>
+
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -64,8 +65,9 @@ struct Vec3 {
     return res;
   }
 
-  // This allows things like v.xyx()
-  #define SLICED_ACCESSOR(a, b, c) Vec3 a##b##c() const { return Vec3(a, b, c); }
+// This allows things like v.xyx()
+#define SLICED_ACCESSOR(a, b, c) \
+  Vec3 a##b##c() const { return Vec3(a, b, c); }
   SLICED_ACCESSOR(x, x, x)
   SLICED_ACCESSOR(x, x, y)
   SLICED_ACCESSOR(x, x, z)
@@ -112,6 +114,11 @@ struct Vec3 {
   float len2() const { return x * x + y * y + z * z; }
 
   float len() const { return sqrt(len2()); }
+
+  Vec3 len(float l) {
+    (*this) *= l / len();
+    return *this;
+  }
 
   void inormalize() { (*this) /= len(); }
 
@@ -200,8 +207,7 @@ struct Vec3 {
   }
 
   Vec3 clamp(float min, float max) const {
-    return Vec3(std::clamp(x, min, max),
-                std::clamp(y, min, max),
+    return Vec3(std::clamp(x, min, max), std::clamp(y, min, max),
                 std::clamp(z, min, max));
   }
 
@@ -214,18 +220,22 @@ struct Vec3 {
 
 typedef Vec3 vec3;
 
-vec3 operator*(float alpha, const vec3& v) {
-  return v * alpha;
-}
+inline float dist(const vec3& v1, const vec3& v2) { return (v1 - v2).len(); }
 
-vec3 abs(const vec3& v) { return vec3(abs(v.x), abs(v.y), abs(v.z)); }
-float fract(float f) {
+inline vec3 operator*(float alpha, const vec3& v) { return v * alpha; }
+
+inline vec3 abs(const vec3& v) { return vec3(abs(v.x), abs(v.y), abs(v.z)); }
+inline float fract(float f) {
   float _;
   return modf(f, &_);
 }
-vec3 fract(const vec3& v) { return vec3(fract(v.x), fract(v.y), fract(v.z)); }
-vec3 clamp(const vec3& v, float min, float max) { return v.clamp(min, max); }
-vec3 mix(const vec3& a, const vec3& b, float f) {
+inline vec3 fract(const vec3& v) {
+  return vec3(fract(v.x), fract(v.y), fract(v.z));
+}
+inline vec3 clamp(const vec3& v, float min, float max) {
+  return v.clamp(min, max);
+}
+inline vec3 mix(const vec3& a, const vec3& b, float f) {
   return a * f + b * (1 - f);
 }
 

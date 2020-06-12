@@ -78,8 +78,8 @@ class Image : public Array2D<Color> {
     }
   }
 
-  void save(const std::string& s) { save(s.c_str()); }
-  void save(const char* filename) {
+  void save(const std::string& s) const { save(s.c_str()); }
+  void save(const char* filename) const {
     FILE* fp = fopen(filename, "wb");
     CHECK(fp != 0) << "cannot open file '" << filename << "'.";
     (void)fprintf(fp, "P6\n%d %d\n255\n", (int)width_, (int)height_);
@@ -89,6 +89,11 @@ class Image : public Array2D<Color> {
       (void)fwrite(&rgb, 1, 3, fp);
     }
     (void)fclose(fp);
+  }
+
+  void show() const {
+    save("/tmp/delme.ppm");
+    system("open /tmp/delme.ppm");
   }
 
   static Image fromFloatArray(const Array2D<float>& arr,
